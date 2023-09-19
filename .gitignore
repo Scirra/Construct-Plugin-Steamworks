@@ -1,3 +1,3 @@
 .vs
 *.c3addon
-*.vcxproject.user
+*.vcxproj.user
