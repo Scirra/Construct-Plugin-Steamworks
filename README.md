@@ -40,6 +40,10 @@ The Construct plugin is distributed as a [.c3addon file](https://www.construct.n
 > [!WARNING]
 > If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. Further, if you wish to add support for more Steam API methods, you may be better off creating an independent plugin rather than modifying this one. For more information see the [Contributing guide](CONTRIBUTING.md).
 
+## Support
+
+If you think there is an issue with this plugin, please file it following all the guidelines at the [main Construct issue tracker](https://github.com/Scirra/Construct-bugs), so we can keep all our issues in the same place. Issues have been disabled for this repository.
+
 ## Contributing
 
 Due to Scirra Ltd's obligation to provide long-term commercial support, we may reject any submitted changes to this plugin. However there are other options such as developing an independent companion plugin. For more information see the [Contributing guide](CONTRIBUTING.md).
