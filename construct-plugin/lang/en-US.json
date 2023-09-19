@@ -1,0 +1,182 @@
+﻿{
+	"languageTag": "en-US",
+	"fileDescription": "Strings for the Steamworks wrapper extension plugin.",
+	"text": {
+		"plugins": {
+			"steamworks_ext": {
+				"name": "Steamworks (WebView2)",
+				"description": "Access Steam features in the WebView2 export option.",
+				"help-url": "https://www.construct.net/en/make-games/addons/1105/steamworks-webview2/documentation",
+				"properties": {
+					"app-id": {
+						"name": "App ID",
+						"desc": "The Steam App ID to use. Leave empty to allow Steam to determine it."
+					},
+					"development-mode": {
+						"name": "Development mode",
+						"desc": "Check to enable development mode, which sets the app ID and disables automatic restarting. Turn off for release."
+					},
+					"enable-overlay": {
+						"name": "Enable overlay",
+						"desc": "Enable the Steam Overlay (using workaround). Disabling causes Steam to revert to fallbacks."
+					}
+				},
+				"aceCategories": {
+					"steamworks": "Steamworks",
+					"stats-achievements": "Stats / Achievements"
+				},
+				"conditions": {
+					"is-available": {
+						"list-name": "Is available",
+						"display-text": "Is available",
+						"description": "True if successfully initialized the Steam API."
+					},
+					"is-running-on-steam-deck": {
+						"list-name": "Is running on Steam Deck",
+						"display-text": "Is running on Steam Deck",
+						"description": "Checks if Steam is running on a Steam Deck device."
+					},
+					"on-overlay-shown": {
+						"list-name": "On overlay shown",
+						"display-text": "On overlay shown",
+						"description": "Triggered when the game overlay is shown."
+					},
+					"on-overlay-hidden": {
+						"list-name": "On overlay hidden",
+						"display-text": "On overlay hidden",
+						"description": "Triggered when the game overlay is hidden."
+					},
+					"on-any-achievement-unlock-success": {
+						"list-name": "On any achievement unlock success",
+						"display-text": "On any achievement unlock success",
+						"description": "Triggered after any successful 'Unlock achievement' action."
+					},
+					"on-achievement-unlock-success": {
+						"list-name": "On achievement unlock success",
+						"display-text": "On achievement [i]{0}[/i] unlock success",
+						"description": "Triggered after a successful 'Unlock achievement' action.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"on-any-achievement-unlock-error": {
+						"list-name": "On any achievement unlock error",
+						"display-text": "On any achievement unlock error",
+						"description": "Triggered after any 'Unlock achievement' action fails."
+					},
+					"on-achievement-unlock-error": {
+						"list-name": "On achievement unlock error",
+						"display-text": "On achievement [i]{0}[/i] unlock error",
+						"description": "Triggered after an 'Unlock achievement' action failed.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					}
+				},
+				"actions": {
+					"show-overlay": {
+						"list-name": "Show overlay",
+						"display-text": "Show overlay for [b]{0}[/b]",
+						"description": "Show the Steam game overlay.",
+						"params": {
+							"option": {
+								"name": "Option",
+								"desc": "The overlay section to display.",
+								"items": {
+									"friends": "Friends",
+									"community": "Community",
+									"players": "Players",
+									"settings": "Settings",
+									"official-game-group": "Official Game Group",
+									"stats": "Stats",
+									"achievements": "Achievements"
+								}
+							}
+						}
+					},
+					"show-overlay-url": {
+						"list-name": "Show overlay to URL",
+						"display-text": "Show overlay to URL [b]{0}[/b] (modal: [i]{1}[/i])",
+						"description": "Show the Steam game overlay and load a URL from the web.",
+						"params": {
+							"url": {
+								"name": "URL",
+								"desc": "The URL to load in the overlay."
+							},
+							"modal": {
+								"name": "Modal",
+								"desc": "Whether to display the URL in a modal style in the overlay."
+							}
+						}
+					},
+					"unlock-achievement": {
+						"list-name": "Unlock achievement",
+						"display-text": "Unlock achievement [b]{0}[/b]",
+						"description": "Unlock an achievement for the current Steam game.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"clear-achievement": {
+						"list-name": "Clear achievement",
+						"display-text": "Clear achievement [b]{0}[/b]",
+						"description": "Reset the unlock status of an achievement. Typically only used for testing purposes.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					}
+				},
+				"expressions": {
+					"account-id": {
+						"description": "The current user's Steam account ID.",
+						"translated-name": "AccountID"
+					},
+					"static-account-key": {
+						"description": "The current user's Steam static account key as a string.",
+						"translated-name": "StaticAccountKey"
+					},
+					"persona-name": {
+						"description": "The current user's Steam persona (display) name.",
+						"translated-name": "PersonaName"
+					},
+					"player-steam-level": {
+						"description": "Gets the Steam level of the user, as shown on their Steam community profile.",
+						"translated-name": "PlayerSteamLevel"
+					},
+					"app-id": {
+						"description": "Gets the App ID of the current game.",
+						"translated-name": "AppID"
+					},
+					"steam-ui-language": {
+						"description": "Returns the language the Steam client is running in.",
+						"translated-name": "SteamUILanguage"
+					},
+					"current-game-language": {
+						"description": "Gets the current language that the user has set.",
+						"translated-name": "CurrentGameLanguage"
+					},
+					"available-game-languages": {
+						"description": "Gets a comma separated list of the languages the current app supports.",
+						"translated-name": "AvailableGameLanguages"
+					},
+					"achievement": {
+						"description": "In an achievement trigger, the 'API Name' of the achievement.",
+						"translated-name": "Achievement"
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,133 @@
+﻿{
+	"steamworks": {
+		"conditions": [
+			{
+				"id": "is-available",
+				"scriptName": "IsAvailable"
+			}, {
+				"id": "is-running-on-steam-deck",
+				"scriptName": "IsRunningOnSteamDeck"
+			}, {
+				"id": "on-overlay-shown",
+				"scriptName": "OnGameOverlayShown",
+				"isTrigger": true
+			}, {
+				"id": "on-overlay-hidden",
+				"scriptName": "OnGameOverlayHidden",
+				"isTrigger": true
+			}
+		],
+		"actions": [
+			{
+				"id": "show-overlay",
+				"scriptName": "ShowOverlay",
+				"params": [{
+					"id": "option",
+					"type": "combo",
+					"items": ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"]
+				}]
+			}, {
+				"id": "show-overlay-url",
+				"scriptName": "ShowOverlayURL",
+				"params": [{
+					"id": "url",
+					"type": "string",
+					"initialValue": "\"https://www.construct.net\""
+				}, {
+					"id": "modal",
+					"type": "boolean"
+				}]
+			}
+		],
+		"expressions": [
+			{
+				"id": "account-id",
+				"expressionName": "AccountID",
+				"returnType": "number"
+			}, {
+				"id": "static-account-key",
+				"expressionName": "StaticAccountKey",
+				"returnType": "string"
+			}, {
+				"id": "persona-name",
+				"expressionName": "PersonaName",
+				"returnType": "string"
+			}, {
+				"id": "player-steam-level",
+				"expressionName": "PlayerSteamLevel",
+				"returnType": "number"
+			}, {
+				"id": "app-id",
+				"expressionName": "AppID",
+				"returnType": "number"
+			}, {
+				"id": "steam-ui-language",
+				"expressionName": "SteamUILanguage",
+				"returnType": "string"
+			}, {
+				"id": "current-game-language",
+				"expressionName": "CurrentGameLanguage",
+				"returnType": "string"
+			}, {
+				"id": "available-game-languages",
+				"expressionName": "AvailableGameLanguages",
+				"returnType": "string"
+			}
+		]
+	},
+	"stats-achievements": {
+		"conditions": [
+			{
+				"id": "on-any-achievement-unlock-success",
+				"scriptName": "OnAnyAchievementUnlockSuccess",
+				"isTrigger": true
+			}, {
+				"id": "on-achievement-unlock-success",
+				"scriptName": "OnAchievementUnlockSuccess",
+				"isTrigger": true,
+				"params": [{
+					"id": "achievement",
+					"type": "string"
+				}]
+			}, {
+				"id": "on-any-achievement-unlock-error",
+				"scriptName": "OnAnyAchievementUnlockError",
+				"isTrigger": true
+			}, {
+				"id": "on-achievement-unlock-error",
+				"scriptName": "OnAchievementUnlockError",
+				"isTrigger": true,
+				"params": [{
+					"id": "achievement",
+					"type": "string"
+				}]
+			}
+		],
+		"actions": [
+			{
+				"id": "unlock-achievement",
+				"scriptName": "UnlockAchievement",
+				"isAsync": true,
+				"params": [{
+					"id": "achievement",
+					"type": "string"
+				}]
+			}, {
+				"id": "clear-achievement",
+				"scriptName": "ClearAchievement",
+				"isAsync": true,
+				"params": [{
+					"id": "achievement",
+					"type": "string"
+				}]
+			}
+		],
+		"expressions": [
+			{
+				"id": "achievement",
+				"expressionName": "Achievement",
+				"returnType": "string"
+			}
+		]
+	}
+}

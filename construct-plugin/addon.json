@@ -1,0 +1,37 @@
+﻿{
+	"is-c3-addon": true,
+	"type": "plugin",
+	"name": "Steamworks (WebView2)",
+	"id": "Steamworks_Ext",
+	"version": "1.0.0.0",
+	"author": "Scirra",
+	"website": "https://www.construct.net",
+	"documentation": "https://www.construct.net",
+	"description": "Access Steam features in the WebView2 export option.",
+	"editor-scripts": [
+						"plugin.js",
+						"type.js",
+						"instance.js"
+					],
+	"file-list": [
+		"c3runtime/plugin.js",
+		"c3runtime/type.js",
+		"c3runtime/instance.js",
+		"c3runtime/conditions.js",
+		"c3runtime/actions.js",
+		"c3runtime/expressions.js",
+		"lang/en-US.json",
+		"aces.json",
+		"addon.json",
+		"icon.svg",
+		"instance.js",
+		"plugin.js",
+		"type.js",
+		"D3D11Overlay_x86.ext.dll",
+		"D3D11Overlay_x64.ext.dll",
+		"Steam_x86.ext.dll",
+		"Steam_x64.ext.dll",
+		"steam_api.dll",
+		"steam_api64.dll"
+	]
+}
