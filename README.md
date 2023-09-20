@@ -23,7 +23,7 @@ The Construct plugin requires 3 DLLs, each in the x86 (32-bit) and x64 (64-bit) 
 For convenience these DLLs are provided in this repository. However if you make changes you may want to replace some of these DLLs.
 
 > [!WARNING]
-> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. For more information see the [Contributing guide](CONTRIBUTING.md).
+> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. For more information see the [Contributing guide](https://github.com/Scirra/Construct-Plugin-Steamworks/blob/main/CONTRIBUTING.md).
 
 ## Testing
 
@@ -38,7 +38,7 @@ A sample Construct project is provided in this repository which is just a techni
 The Construct plugin is distributed as a [.c3addon file](https://www.construct.net/en/make-games/manuals/addon-sdk/guide/c3addon-file), which is essentially a renamed zip file with the addon files.
 
 > [!WARNING]
-> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. Further, if you wish to add support for more Steam API methods, you may be better off creating an independent plugin rather than modifying this one. For more information see the [Contributing guide](CONTRIBUTING.md).
+> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. Further, if you wish to add support for more Steam API methods, you may be better off creating an independent plugin rather than modifying this one. For more information see the [Contributing guide](https://github.com/Scirra/Construct-Plugin-Steamworks/blob/main/CONTRIBUTING.md).
 
 ## Support
 
@@ -46,7 +46,7 @@ If you think there is an issue with this plugin, please file it following all th
 
 ## Contributing
 
-Due to Scirra Ltd's obligation to provide long-term commercial support, we may reject any submitted changes to this plugin. However there are other options such as developing an independent companion plugin. For more information see the [Contributing guide](CONTRIBUTING.md).
+Due to Scirra Ltd's obligation to provide long-term commercial support, we may reject any submitted changes to this plugin. However there are other options such as developing an independent companion plugin. For more information see the [Contributing guide](https://github.com/Scirra/Construct-Plugin-Steamworks/blob/main/CONTRIBUTING.md).
 
 ## License
 
