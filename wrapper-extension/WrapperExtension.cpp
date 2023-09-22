@@ -44,8 +44,16 @@ WrapperExtension::WrapperExtension(IApplication* iApplication_)
 {
 	OutputDebugString(L"[SteamExt] Loaded extension\n");
 
+	// Tell the host application the SDK version used. Don't change this.
+	iApplication->SetSdkVersion(WRAPPER_EXT_SDK_VERSION);
+
 	// Register the "scirra-steam" component for JavaScript messaging
 	iApplication->RegisterComponentId("scirra-steam");
+}
+
+void WrapperExtension::Init()
+{
+	// Called during startup after all other extensions have been loaded.
 }
 
 void WrapperExtension::Release()
