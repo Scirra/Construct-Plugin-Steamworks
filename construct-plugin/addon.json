@@ -3,7 +3,7 @@
 	"type": "plugin",
 	"name": "Steamworks (WebView2)",
 	"id": "Steamworks_Ext",
-	"version": "1.0.0.0",
+	"version": "1.0.1.0",
 	"author": "Scirra",
 	"website": "https://www.construct.net",
 	"documentation": "https://www.construct.net",
