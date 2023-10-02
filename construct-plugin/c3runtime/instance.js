@@ -189,11 +189,17 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 
 	_ShowOverlay(option)
 	{
+		if (!this._IsAvailable())
+			return;
+
 		this.SendWrapperExtensionMessage("show-overlay", [option]);
 	}
 
 	_ShowOverlayURL(url, modal)
 	{
+		if (!this._IsAvailable())
+			return;
+		
 		this.SendWrapperExtensionMessage("show-overlay-url", [url, modal]);
 	}
 
