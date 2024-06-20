@@ -5,7 +5,7 @@ C3.Plugins.Steamworks_Ext.Type = class SteamworksExtType extends globalThis.ISDK
 {
 	constructor()
 	{
-		super(objectClass);
+		super();
 	}
 	
 	_onCreate()
