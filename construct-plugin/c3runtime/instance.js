@@ -1,14 +1,14 @@
 
-const C3 = self.C3;
+const C3 = globalThis.C3;
 
-C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDKInstanceBase
+const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"];
+
+C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 {
-	constructor(inst, properties)
+	constructor()
 	{
-		super(inst);
-		
 		// Set "scirra-steam" component ID, matching the same component ID set by the wrapper extension.
-		this.SetWrapperExtensionComponentId("scirra-steam");
+		super({ wrapperComponentId: "scirra-steam" });
 		
 		// Steam properties
 		this._isAvailable = false;
@@ -31,6 +31,7 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 		// For triggers
 		this._triggerAchievement = "";
 		
+		const properties = this._getInitProperties();
 		if (properties)
 		{
 			// Read the optional app ID, development mode and overlay properties for initialization.
@@ -40,30 +41,30 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 		}
 
 		// Listen for overlay shown/hidden events from the extension.
-		this.AddWrapperExtensionMessageHandler("on-game-overlay-activated", e => this._OnGameOverlayActivated(e));
+		this._addWrapperExtensionMessageHandler("on-game-overlay-activated", e => this._onGameOverlayActivated(e));
 
 		// Corresponding wrapper extension is available
-		if (this.IsWrapperExtensionAvailable())
+		if (this._isWrapperExtensionAvailable())
 		{
 			// Run async init during loading.
-			this._runtime.AddLoadPromise(this._Init(initAppIdStr, isDevelopmentMode));
+			this.runtime.addLoadPromise(this._init(initAppIdStr, isDevelopmentMode));
 
 			// Steamworks needs the app to regularly call SteamAPI_RunCallbacks(), which is done by sending
 			// the "run-callbacks" message every tick. However Construct's Tick() callback only starts
 			// once the loading screen finishes. In order to allow Steam to continue running callbacks while
 			// the loading screen is showing (necessary for features like the overlay), set a timer to
 			// run callbacks every 20ms until the first tick, which clears the timer.
-			this._loadingTimerId = self.setInterval(() => this._RunCallbacks(), 20);
+			this._loadingTimerId = globalThis.setInterval(() => this._runCallbacks(), 20);
 
-			this._StartTicking();
+			this._setTicking(true);
 		}
 	}
 	
-	async _Init(initAppIdStr, isDevelopmentMode)
+	async _init(initAppIdStr, isDevelopmentMode)
 	{
 		// Send init message to wrapper extension and wait for result.
 		// Pass the app ID specified in properties to optionally tell Steam which app ID to use.
-		const result = await this.SendWrapperExtensionMessageAsync("init", [initAppIdStr, isDevelopmentMode]);
+		const result = await this._sendWrapperExtensionMessageAsync("init", [initAppIdStr, isDevelopmentMode]);
 
 		// Check availability of Steam features.
 		this._isAvailable = !!result["isAvailable"];
@@ -85,9 +86,11 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 			// for Steam to render its overlay in to. If the overlay is disabled Steam appears to fail to create
 			// its overlay as it doesn't support WebView2, but it does have fallbacks, and the setting allows using
 			// those fallbacks if preferable for any reason.
-			if (this._isOverlayEnabled)
+			// NOTE: this.runtime.sendWrapperExtensionMessage added in a beta release so check for support before calling
+			// TODO: remove these checks when support reaches a stable release
+			if (this._isOverlayEnabled && this.runtime.sendWrapperExtensionMessage)
 			{
-				this._runtime.SendWrapperExtensionMessage("d3d11-overlay", "create-overlay", [
+				this.runtime.sendWrapperExtensionMessage("d3d11-overlay", "create-overlay", [
 					false,		// isTransparent - use opaque overlay as Steam overlay doesn't work with alpha
 					false		// initiallyShowing - start off hidden and only show when overlay activated
 				]);
@@ -95,145 +98,177 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 		}
 	}
 	
-	Release()
+	_release()
 	{
-		super.Release();
+		super._release();
 	}
 
-	Tick()
+	_tick()
 	{
 		// On the first tick, clear the timer running callbacks for the loading screen.
 		if (this._loadingTimerId !== -1)
 		{
-			self.clearInterval(this._loadingTimerId);
+			globalThis.clearInterval(this._loadingTimerId);
 			this._loadingTimerId = -1;
 		}
 		
-		this._RunCallbacks();
+		this._runCallbacks();
 	}
 
-	_RunCallbacks()
+	_runCallbacks()
 	{
 		// Tell extension to call SteamAPI_RunCallbacks().
-		this.SendWrapperExtensionMessage("run-callbacks");
+		this._sendWrapperExtensionMessage("run-callbacks");
 	}
 
-	_OnGameOverlayActivated(e)
+	_onGameOverlayActivated(e)
 	{
 		const isShowing = e["isShowing"];
 
-		if (this._isOverlayEnabled)
+		if (this._isOverlayEnabled && this.runtime.sendWrapperExtensionMessage)
 		{
 			// Tell the D3D11Overlay extension to show/hide its overlay according to the visibility of the Steam Overlay.
-			this._runtime.SendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
+			this.runtime.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
 		}
 
 		// Dispatch scripting event and fire appropriate trigger
-		this.DispatchScriptEvent("overlay-activated", false, { isShowing });
+		const overlayActivatedEvent = new C3.Event("overlay-activated", false);
+		overlayActivatedEvent.isShowing = isShowing;
+		this.dispatchEvent(overlayActivatedEvent);
 
 		if (isShowing)
-			this.Trigger(self.C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayShown);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayShown);
 		else
-			this.Trigger(self.C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayHidden);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayHidden);
 	}
 
-	_IsAvailable()
+	_showOverlay(option)
+	{
+		if (!this._isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("show-overlay", [option]);
+	}
+
+	_showOverlayURL(url, modal)
+	{
+		if (!this._isAvailable)
+			return;
+		
+		this._sendWrapperExtensionMessage("show-overlay-url", [url, modal]);
+	}
+	
+	_saveToJson()
+	{
+		return {
+			// data to be saved for savegames
+		};
+	}
+	
+	_loadFromJson(o)
+	{
+		// load state for savegames
+	}
+
+	/////////////////////////////
+	// Public script interface
+	get isAvailable()
 	{
 		return this._isAvailable;
 	}
 
-	_IsRunningOnSteamDeck()
+	get isRunningOnSteamDeck()
 	{
 		return this._isRunningOnSteamDeck;
 	}
 
-	_GetPersonaName()
+	get personaName()
 	{
 		return this._personaName;
 	}
 
-	_GetAccountID()
+	get accountId()
 	{
 		return this._accountId;
 	}
 
-	_GetStaticAccountKey()
+	get staticAccountKey()
 	{
 		return this._staticAccountKey;
 	}
 
-	_GetPlayerSteamLevel()
+	get playerSteamLevel()
 	{
 		return this._playerSteamLevel;
 	}
 
-	_GetAppID()
+	get appId()
 	{
 		return this._appId;
 	}
 
-	_GetSteamUILanguage()
+	get steamUILanguage()
 	{
 		return this._steamUILanguage;
 	}
 
-	_GetCurrentGameLanguage()
+	get currentGameLanguage()
 	{
 		return this._currentGameLanguage;
 	}
 
-	_GetAvailableGameLanguages()
+	// For the public script API use a method that returns an array, splitting the
+	// comma-separated string
+	getAvailableGameLanguages()
 	{
-		return this._availableGameLanguages;
+		return this._availableGameLanguages.split(",");
 	}
 
-	_ShowOverlay(option)
+	showOverlay(optionStr)
 	{
-		if (!this._IsAvailable())
-			return;
+		const option = VALID_OVERLAY_OPTIONS.indexOf(optionStr);
+		if (option === -1)
+			throw new Error(`invalid overlay option '${optionStr}'`);
 
-		this.SendWrapperExtensionMessage("show-overlay", [option]);
+		this._showOverlay(option);
 	}
 
-	_ShowOverlayURL(url, modal)
+	showOverlayURL(url, modal)
 	{
-		if (!this._IsAvailable())
-			return;
-		
-		this.SendWrapperExtensionMessage("show-overlay-url", [url, modal]);
+		this._showOverlayURL(url, !!modal);
 	}
 
-	async _UnlockAchievement(achievement)
+	async unlockAchievement(achievement)
 	{
-		if (!this._IsAvailable())
+		if (!this._isAvailable)
 			return false;
 		
-		const result = await this.SendWrapperExtensionMessageAsync("set-achievement", [achievement]);
+		const result = await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement]);
 
 		this._triggerAchievement = achievement;
 
 		const isOk = result["isOk"];
 		if (isOk)
 		{
-			this.Trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyAchievementUnlockSuccess);
-			this.Trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAchievementUnlockSuccess);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyAchievementUnlockSuccess);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAchievementUnlockSuccess);
 		}
 		else
 		{
-			this.Trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyAchievementUnlockError);
-			this.Trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAchievementUnlockError);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyAchievementUnlockError);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAchievementUnlockError);
 		}
 
 		// Return result for script interface
 		return isOk;
 	}
 
-	async _ClearAchievement(achievement)
+	async clearAchievement(achievement)
 	{
-		if (!this._IsAvailable())
+		if (!this._isAvailable)
 			return false;
 		
-		const result = await this.SendWrapperExtensionMessageAsync("clear-achievement", [achievement]);
+		const result = await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement]);
 
 		// Just log result as this is primarily for testing purposes
 		const isOk = result["isOk"];
@@ -248,114 +283,5 @@ C3.Plugins.Steamworks_Ext.Instance = class Steamworks_ExtInstance extends C3.SDK
 
 		// Return result for script interface
 		return isOk;
-	}
-	
-	SaveToJson()
-	{
-		return {
-			// data to be saved for savegames
-		};
-	}
-	
-	LoadFromJson(o)
-	{
-		// load state for savegames
-	}
-
-	GetScriptInterfaceClass()
-	{
-		return self.ISteamworksExtGlobalInstance;
-	}
-};
-
-// Script interface. Use a WeakMap to safely hide the internal implementation details from the
-// caller using the script interface.
-const map = new WeakMap();
-
-const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"];
-
-self.ISteamworksExtGlobalInstance = class ISteamworksExtGlobalInstance extends self.IInstance {
-	constructor()
-	{
-		super();
-		
-		// Map by SDK instance
-		map.set(this, self.IInstance._GetInitInst().GetSdkInstance());
-	}
-
-	get isAvailable()
-	{
-		return map.get(this)._IsAvailable();
-	}
-
-	get isRunningOnSteamDeck()
-	{
-		return map.get(this)._IsRunningOnSteamDeck();
-	}
-
-	get personaName()
-	{
-		return map.get(this)._GetPersonaName();
-	}
-
-	get accountId()
-	{
-		return map.get(this)._GetAccountID();
-	}
-
-	get staticAccountKey()
-	{
-		return map.get(this)._GetStaticAccountKey();
-	}
-
-	get playerSteamLevel()
-	{
-		return map.get(this)._GetPlayerSteamLevel();
-	}
-
-	get appId()
-	{
-		return map.get(this)._GetAppID();
-	}
-
-	get steamUILanguage()
-	{
-		return map.get(this)._GetSteamUILanguage();
-	}
-
-	get currentGameLanguage()
-	{
-		return map.get(this)._GetCurrentGameLanguage();
-	}
-
-	// For the script API use a method that returns an array, splitting the
-	// comma-separated string
-	getAvailableGameLanguages()
-	{
-		return map.get(this)._GetAvailableGameLanguages().split(",");
-	}
-
-	showOverlay(optionStr)
-	{
-		const option = VALID_OVERLAY_OPTIONS.indexOf(optionStr);
-		if (option === -1)
-			throw new Error(`invalid overlay option '${optionStr}'`);
-
-		map.get(this)._ShowOverlay(option);
-	}
-
-	showOverlayURL(url, modal)
-	{
-		map.get(this)._ShowOverlayURL(url, !!modal);
-	}
-
-	/* async */ unlockAchievement(achievement)
-	{
-		return map.get(this)._UnlockAchievement(achievement);
-	}
-
-	/* async */ clearAchievement(achievement)
-	{
-		return map.get(this)._ClearAchievement(achievement);
 	}
 };

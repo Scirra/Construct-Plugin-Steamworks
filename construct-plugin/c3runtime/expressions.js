@@ -1,46 +1,47 @@
 
-const C3 = self.C3;
+const C3 = globalThis.C3;
 
 C3.Plugins.Steamworks_Ext.Exps =
 {
 	AccountID()
 	{
-		return this._GetAccountID();
+		return this.accountId;
 	},
 
 	StaticAccountKey()
 	{
-		return this._GetStaticAccountKey();
+		return this.staticAccountKey;
 	},
 
 	PersonaName()
 	{
-		return this._GetPersonaName();
+		return this.personaName;
 	},
 
 	PlayerSteamLevel()
 	{
-		return this._GetPlayerSteamLevel();
+		return this.playerSteamLevel;
 	},
 
 	AppID()
 	{
-		return this._GetAppID();
+		return this.appId;
 	},
 
 	SteamUILanguage()
 	{
-		return this._GetSteamUILanguage();
+		return this.steamUILanguage;
 	},
 
 	CurrentGameLanguage()
 	{
-		return this._GetCurrentGameLanguage();
+		return this.currentGameLanguage;
 	},
 
 	AvailableGameLanguages()
 	{
-		return this._GetAvailableGameLanguages();
+		// note expression returns comma-separated string
+		return this._availableGameLanguages;
 	},
 
 	Achievement()
