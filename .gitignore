@@ -7,3 +7,4 @@
 /construct-plugin/*.exp
 /construct-plugin/*.lib
 /construct-plugin/*.pdb
+/construct-plugin/ts-defs/
