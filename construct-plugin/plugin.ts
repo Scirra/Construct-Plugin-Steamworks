@@ -28,6 +28,7 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		this._info.SetAuthor("Scirra");
 		this._info.SetHelpUrl(self.lang(".help-url"));
 		this._info.SetIsSingleGlobal(true);
+		this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
 		
 		SDK.Lang.PushContext(".properties");
 		

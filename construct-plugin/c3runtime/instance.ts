@@ -62,7 +62,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (this._isWrapperExtensionAvailable())
 		{
 			// Run async init during loading.
-			this.runtime.addLoadPromise(this._init(initAppIdStr, isDevelopmentMode));
+			this.runtime.sdk.addLoadPromise(this._init(initAppIdStr, isDevelopmentMode));
 
 			// Steamworks needs the app to regularly call SteamAPI_RunCallbacks(), which is done by sending
 			// the "run-callbacks" message every tick. However Construct's Tick() callback only starts
@@ -103,11 +103,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			// for Steam to render its overlay in to. If the overlay is disabled Steam appears to fail to create
 			// its overlay as it doesn't support WebView2, but it does have fallbacks, and the setting allows using
 			// those fallbacks if preferable for any reason.
-			// NOTE: this.runtime.sendWrapperExtensionMessage added in a beta release so check for support before calling
-			// TODO: remove these checks when support reaches a stable release
-			if (this._isOverlayEnabled && this.runtime.sendWrapperExtensionMessage)
+			if (this._isOverlayEnabled)
 			{
-				this.runtime.sendWrapperExtensionMessage("d3d11-overlay", "create-overlay", [
+				this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "create-overlay", [
 					false,		// isTransparent - use opaque overlay as Steam overlay doesn't work with alpha
 					false		// initiallyShowing - start off hidden and only show when overlay activated
 				]);
@@ -142,10 +140,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	{
 		const isShowing = e["isShowing"] as boolean;
 
-		if (this._isOverlayEnabled && this.runtime.sendWrapperExtensionMessage)
+		if (this._isOverlayEnabled)
 		{
 			// Tell the D3D11Overlay extension to show/hide its overlay according to the visibility of the Steam Overlay.
-			this.runtime.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
+			this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
 		}
 
 		// Dispatch scripting event and fire appropriate trigger
