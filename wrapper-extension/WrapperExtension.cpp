@@ -2,13 +2,17 @@
 #include "pch.h"
 #include "WrapperExtension.h"
 
+#ifdef __linux__
+#include <stdlib.h>		// for setenv()
+#endif
+
 //////////////////////////////////////////////////////
 // Boilerplate stuff
 WrapperExtension* g_Extension = nullptr;
 
 // Main DLL export function to initialize extension.
 extern "C" {
-	__declspec(dllexport) IExtension* WrapperExtInit(IApplication* iApplication)
+	DLLEXPORT IExtension* WrapperExtInit(IApplication* iApplication)
 	{
 		g_Extension = new WrapperExtension(iApplication);
 		return g_Extension;
@@ -17,7 +21,7 @@ extern "C" {
 
 // Helper method to call HandleWebMessage() with more useful types, as OnWebMessage() must deal with
 // plain-old-data types for crossing a DLL boundary.
-void WrapperExtension::OnWebMessage(LPCSTR messageId_, size_t paramCount, const ExtensionParameterPOD* paramArr, double asyncId)
+void WrapperExtension::OnWebMessage(const char* messageId_, size_t paramCount, const ExtensionParameterPOD* paramArr, double asyncId)
 {
 	HandleWebMessage(messageId_, UnpackExtensionParameterArray(paramCount, paramArr), asyncId);
 }
@@ -39,10 +43,9 @@ void WrapperExtension::SendAsyncResponse(const std::map<std::string, ExtensionPa
 // WrapperExtension
 WrapperExtension::WrapperExtension(IApplication* iApplication_)
 	: iApplication(iApplication_),
-	  hWndMain(NULL),
 	  didSteamInitOk(false)
 {
-	OutputDebugString(L"[SteamExt] Loaded extension\n");
+	DebugLog("[SteamExt] Loaded extension\n");
 
 	// Tell the host application the SDK version used. Don't change this.
 	iApplication->SetSdkVersion(WRAPPER_EXT_SDK_VERSION);
@@ -58,7 +61,7 @@ void WrapperExtension::Init()
 
 void WrapperExtension::Release()
 {
-	OutputDebugString(L"[SteamExt] Releasing extension\n");
+	DebugLog("[SteamExt] Releasing extension\n");
 
 	if (didSteamInitOk)
 	{
@@ -70,10 +73,15 @@ void WrapperExtension::Release()
 	}
 }
 
+#ifdef _WIN32
 void WrapperExtension::OnMainWindowCreated(HWND hWnd)
 {
-	hWndMain = hWnd;
 }
+#else
+void WrapperExtension::OnMainWindowCreated()
+{
+}
+#endif
 
 void WrapperExtension::OnGameOverlayActivated(bool isShowing)
 {
@@ -86,7 +94,7 @@ void WrapperExtension::OnGameOverlayActivated(bool isShowing)
 void WrapperExtension::OnUserStatsReceived(EResult eResult)
 {
 	// Not currently used. Could be used to check RequestCurrentStats() completed successfully.
-	OutputDebugString(L"[SteamExt] On user stats received\n");
+	DebugLog("[SteamExt] On user stats received\n");
 }
 
 void WrapperExtension::OnUserStatsStored(EResult eResult)
@@ -150,8 +158,12 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 		// prefers using that), but initialization will fail if Steam cannot determine any app ID.
 		if (isDevelopmentMode)
 		{
+#ifdef _WIN32
 			std::wstring initAppIdW = Utf8ToWide(initAppId);
 			SetEnvironmentVariable(L"SteamAppId", initAppIdW.c_str());
+#else
+			setenv("SteamAppId", initAppId.c_str(), 1);
+#endif
 		}
 		else
 		{
@@ -172,8 +184,12 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 
 			if (appId != 0 && SteamAPI_RestartAppIfNecessary(appId))
 			{
-				OutputDebugString(L"[SteamExt] SteamAPI_RestartAppIfNecessary() returned true; quitting app\n");
-				PostQuitMessage(0);		// quits the whole app
+				DebugLog("[SteamExt] SteamAPI_RestartAppIfNecessary() returned true; quitting app\n");
+#ifdef _WIN32
+				PostQuitMessage(0);
+#else
+				exit(0);
+#endif
 
 				// There's no point doing anything else now the app is quitting, so return.
 				return;
@@ -185,7 +201,7 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 	didSteamInitOk = SteamAPI_Init();
 	if (didSteamInitOk)
 	{
-		OutputDebugString(L"[SteamExt] Steam API initialized successfully\n");
+		DebugLog("[SteamExt] Steam API initialized successfully\n");
 
 		// Create SteamCallbacks class.
 		// Note the Steamworks SDK documentation states that Steam should be initialized before creating
@@ -223,7 +239,7 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 	}
 	else
 	{
-		OutputDebugString(L"[SteamExt] Steam API failed to initialize\n");
+		DebugLog("[SteamExt] Steam API failed to initialize\n");
 
 		// If Steam did not initialize successfully none of the other details can be sent,
 		// so just send a response with isAvailable set to false

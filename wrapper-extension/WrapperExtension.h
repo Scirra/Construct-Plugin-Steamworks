@@ -11,10 +11,14 @@ public:
 	// IExtension overrides
 	void Init();
 	void Release();
+#ifdef _WIN32
 	void OnMainWindowCreated(HWND hWnd_);
+#else
+	void OnMainWindowCreated();
+#endif
 
 	// Web messaging methods
-	void OnWebMessage(LPCSTR messageId, size_t paramCount, const ExtensionParameterPOD* paramArr, double asyncId);
+	void OnWebMessage(const char* messageId, size_t paramCount, const ExtensionParameterPOD* paramArr, double asyncId);
 	void HandleWebMessage(const std::string& messageId, const std::vector<ExtensionParameter>& params, double asyncId);
 
 	void SendWebMessage(const std::string& messageId, const std::map<std::string, ExtensionParameter>& params, double asyncId = -1.0);
@@ -34,7 +38,6 @@ public:
 
 protected:
 	IApplication* iApplication;
-	HWND hWndMain;
 	bool didSteamInitOk;
 
 	std::unique_ptr<SteamCallbacks> steamCallbacks;
