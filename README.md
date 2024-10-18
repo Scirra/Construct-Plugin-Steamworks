@@ -1,15 +1,19 @@
-# Steamworks for WebView2
+# Steamworks for Windows & Linux
 
-This repository contains code for the [Steamworks for WebView2 Construct plugin](https://www.construct.net/en/make-games/addons/1105/steamworks-webview2), and its associated wrapper extension (a DLL which integrates the Steamworks SDK). This allows integrating Construct projects with Steam using the Windows WebView2 export option. There are two main components in this repository:
+This repository contains code for the [Steamworks Construct plugin](https://www.construct.net/en/make-games/addons/1105/steamworks-webview2), and its associated wrapper extension (a DLL which integrates the Steamworks SDK). This allows integrating Construct projects with Steam using the Windows WebView2 and Linux CEF export options. There are two main components in this repository:
 
 - *construct-plugin*: the Construct plugin, written in JavaScript using the [Construct Addon SDK](https://github.com/Scirra/Construct-Addon-SDK)
-- *wrapper-extension*: a Visual Studio 2022 project to build the wrapper extension DLL, written in C++.
+- *wrapper-extension*: a Visual Studio 2022 project to build the wrapper extension DLL, written in C++. This also supports using CMake to build the Linux wrapper extension.
 
-The wrapper extension builds an *.ext.dll* file in the *construct-plugin* subfolder. The Construct plugin is configured to load that DLL in the WebView2 exporter, and then communicates with it via a messaging API.
+The wrapper extension builds an *.ext.dll* (Windows) and *.ext.so* (Linux) file in the *construct-plugin* subfolder. The Construct plugin is configured to load the wrapper extension in the Windows WebView2/Linux CEF exporters, and then communicates with it via a messaging API.
 
 ## Build
 
-To build the wrapper extension, you will need:
+> [!WARNING]
+> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. For more information see the [Contributing guide](https://github.com/Scirra/Construct-Plugin-Steamworks/blob/main/CONTRIBUTING.md).
+
+### Windows
+To build the wrapper extension for Windows, you will need:
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) or newer (the *Community* edition is free)
 - The [Steamworks SDK](https://partner.steamgames.com/doc/sdk) - download and extract the *sdk* subfolder in the *steamworks-sdk* subfolder such that the file `steamworks-sdk\public\steam\steam_api.h` exists.
@@ -22,8 +26,24 @@ The Construct plugin requires 3 DLLs, each in the x86 (32-bit) and x64 (64-bit) 
 
 For convenience these DLLs are provided in this repository. However if you make changes you may want to replace some of these DLLs.
 
+### Linux
+
 > [!WARNING]
-> If you want to modify the plugin for your own purposes, we strongly advise to **change the Construct plugin ID.** This will avoid serious compatibility problems which could result in your project becoming unopenable. For more information see the [Contributing guide](https://github.com/Scirra/Construct-Plugin-Steamworks/blob/main/CONTRIBUTING.md).
+> Linux support is currently experimental.
+
+To build the wrapper extension for Linux, use CMake. Create a new empty *build* directory in the *wrapper-extension* folder, open a terminal in that folder, and run:
+
+```
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+Currently only the x64 architecture is supported for Linux. There are two necessary .so files:
+
+- **steamworks-x64.ext.so** - the wrapper extension shared object (equivalent of a DLL) built from the *wrapper-extension* files
+- **libsteam_api.so** - the Steamworks API shared object from the Steamworks SDK
+
+For convenience these SOs are provided in this repository. However if you make changes you may want to replace some of these SOs.
 
 ## Testing
 

@@ -4,15 +4,15 @@
 	
 	"is-c3-addon": true,
 	"type": "plugin",
-	"name": "Steamworks (WebView2)",
+	"name": "Steamworks",
 	"id": "Steamworks_Ext",
 	"sdk-version": 2,
 	"min-construct-version": "r407.2",
-	"version": "1.1.0.0",
+	"version": "1.2.0.0",
 	"author": "Scirra",
 	"website": "https://www.construct.net",
 	"documentation": "https://www.construct.net",
-	"description": "Access Steam features in the WebView2 export option.",
+	"description": "Access Steam features in the Windows WebView2 and Linux CEF exporters.",
 	"editor-scripts": [
 						"plugin.js",
 						"type.js",
@@ -38,6 +38,8 @@
 		"Steam_x86.ext.dll",
 		"Steam_x64.ext.dll",
 		"steam_api.dll",
-		"steam_api64.dll"
+		"steam_api64.dll",
+		"steamworks-x64.ext.so",
+		"libsteam_api.so"
 	]
 }
