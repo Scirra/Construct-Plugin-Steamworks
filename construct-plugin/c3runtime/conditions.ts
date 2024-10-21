@@ -43,5 +43,20 @@ C3.Plugins.Steamworks_Ext.Cnds =
 	OnAchievementUnlockError(this: SDKInstanceClass, achievement: string)
 	{
 		return achievement.toLowerCase() === this._triggerAchievement.toLowerCase();
+	},
+
+	OnDLCInstalledCheckComplete(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	IsDLCInstalled(this: SDKInstanceClass, appId: number)
+	{
+		return this.isDlcInstalled(appId);
+	},
+
+	OnDLCInstalled(this: SDKInstanceClass)
+	{
+		return true;
 	}
 };

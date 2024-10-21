@@ -14,4 +14,5 @@ protected:
 	STEAM_CALLBACK(SteamCallbacks, OnGameOverlayActivated, GameOverlayActivated_t);
 	STEAM_CALLBACK(SteamCallbacks, OnUserStatsReceived, UserStatsReceived_t);
 	STEAM_CALLBACK(SteamCallbacks, OnUserStatsStored, UserStatsStored_t);
+	STEAM_CALLBACK(SteamCallbacks, OnDLCInstalled, DlcInstalled_t);
 };

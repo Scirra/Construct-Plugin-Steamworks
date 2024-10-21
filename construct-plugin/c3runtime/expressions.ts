@@ -49,5 +49,10 @@ C3.Plugins.Steamworks_Ext.Exps =
 	Achievement(this: SDKInstanceClass)
 	{
 		return this._triggerAchievement;
+	},
+
+	TriggerAppID(this: SDKInstanceClass)
+	{
+		return this._triggerAppId;
 	}
 };

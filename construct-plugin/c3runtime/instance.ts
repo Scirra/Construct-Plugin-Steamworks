@@ -20,6 +20,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	_loadingTimerId: number;
 	_triggerAchievement: string;
 
+	_dlcSet: Set<number>;
+	_triggerAppId: number;
+
 	constructor()
 	{
 		// Set "scirra-steam" component ID, matching the same component ID set by the wrapper extension.
@@ -40,11 +43,14 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		let isDevelopmentMode = false;
 		this._isOverlayEnabled = false;
 
+		this._dlcSet = new Set();
+
 		// For running callbacks while loading
 		this._loadingTimerId = -1;
 
 		// For triggers
 		this._triggerAchievement = "";
+		this._triggerAppId = 0;
 		
 		const properties = this._getInitProperties();
 		if (properties)
@@ -57,6 +63,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		// Listen for overlay shown/hidden events from the extension.
 		this._addWrapperExtensionMessageHandler("on-game-overlay-activated", e => this._onGameOverlayActivated(e as JSONObject));
+
+		this._addWrapperExtensionMessageHandler("on-dlc-installed", e => this._onDlcInstalled(e as JSONObject));
 
 		// Corresponding wrapper extension is available
 		if (this._isWrapperExtensionAvailable())
@@ -156,6 +164,15 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayShown);
 		else
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayHidden);
+	}
+
+	_onDlcInstalled(e: JSONObject)
+	{
+		this._triggerAppId = (e["appId"] as number);
+
+		this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnDLCInstalled);
+
+		this._triggerAppId = 0;
 	}
 
 	_showOverlay(option: number)
@@ -303,6 +320,62 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		// Return result for script interface
 		return isOk;
+	}
+
+	async checkDlcInstalled(appIds: number[])
+	{
+		if (!this._isAvailable)
+			return;
+		
+		const result_ = await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")]);
+
+		const result = result_ as JSONObject;
+
+		const isOk = result["isOk"];
+		if (isOk)
+		{
+			const resultArr = (result["results"] as string).split(",");
+			for (let i = 0, len = resultArr.length; i < len; ++i)
+			{
+				const result = resultArr[i];
+				const isInstalled = (result === "true");
+				const appId = appIds[i];
+				if (appId)
+				{
+					if (isInstalled)
+						this._dlcSet.add(appId);
+					else
+						this._dlcSet.delete(appId);
+				}
+			}
+		}
+
+		// Trigger 'On DLC installed check complete'
+		this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnDLCInstalledCheckComplete);
+
+		// Return result for script interface
+		return isOk;
+	}
+
+	isDlcInstalled(appId: number)
+	{
+		return this._dlcSet.has(appId);
+	}
+
+	installDlc(appId: number)
+	{
+		if (!this._isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("install-dlc", [appId]);
+	}
+
+	uninstallDlc(appId: number)
+	{
+		if (!this._isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("uninstall-dlc", [appId]);
 	}
 };
 

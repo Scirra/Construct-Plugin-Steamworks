@@ -102,6 +102,14 @@ void WrapperExtension::OnUserStatsStored(EResult eResult)
 	// Not currently used. Could be used to check StoreStats() completed successfully.
 }
 
+void WrapperExtension::OnDLCInstalledCallback(AppId_t appId)
+{
+	// Send message to JavaScript to fire corresponding trigger.
+	SendWebMessage("on-dlc-installed", {
+		{ "appId", static_cast<double>(appId) }
+	});
+}
+
 // For handling a message sent from JavaScript.
 // This method mostly just unpacks parameters and calls a dedicated method to handle the message.
 void WrapperExtension::HandleWebMessage(const std::string& messageId, const std::vector<ExtensionParameter>& params, double asyncId)
@@ -141,6 +149,24 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 		const std::string& name = params[0].GetString();
 
 		OnClearAchievementMessage(name, asyncId);
+	}
+	else if (messageId == "is-dlc-installed")
+	{
+		const std::string& appIdStr = params[0].GetString();
+
+		OnIsDLCInstalledMessage(appIdStr, asyncId);
+	}
+	else if (messageId == "install-dlc")
+	{
+		AppId_t appId = static_cast<AppId_t>(params[0].GetNumber());
+
+		OnInstallDLCMessage(appId);
+	}
+	else if (messageId == "uninstall-dlc")
+	{
+		AppId_t appId = static_cast<AppId_t>(params[0].GetNumber());
+
+		OnUninstallDLCMessage(appId);
 	}
 }
 
@@ -312,5 +338,40 @@ void WrapperExtension::OnClearAchievementMessage(const std::string& name, double
 	SendAsyncResponse({
 		{ "isOk", false }
 	}, asyncId);
+}
+
+void WrapperExtension::OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId)
+{
+	std::vector<std::string> appIdArr = SplitString(appIdStr, ",");
+	std::vector<std::string> results;
+
+	for (auto i = appIdArr.begin(), end = appIdArr.end(); i != end; ++i)
+	{
+		AppId_t appId;
+		try {
+			appId = std::stoul(*i);
+		}
+		catch (...)
+		{
+			appId = 0;
+		}
+
+		results.push_back(appId != 0 && SteamApps()->BIsDlcInstalled(appId) ? "true" : "false");
+	}
+
+	SendAsyncResponse({
+		{ "isOk", true },
+		{ "results", JoinStrings(results, ",") }
+	}, asyncId);
+}
+
+void WrapperExtension::OnInstallDLCMessage(AppId_t appId)
+{
+	SteamApps()->InstallDLC(appId);
+}
+
+void WrapperExtension::OnUninstallDLCMessage(AppId_t appId)
+{
+	SteamApps()->UninstallDLC(appId);
 }
 

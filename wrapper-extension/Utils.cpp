@@ -123,3 +123,34 @@ void DebugLog(const std::string& message)
 	std::cout << message;
 #endif
 }
+
+std::vector<std::string> SplitString(const std::string& str, const std::string& sep)
+{
+	std::vector<std::string> ret;
+	size_t next = 0;
+	size_t last = 0;
+
+	while ((next = str.find(sep, last)) != std::string::npos)
+	{
+		ret.push_back(str.substr(last, next - last));
+		last = next + sep.length();
+	}
+
+	ret.push_back(str.substr(last));
+	return ret;
+}
+
+std::string JoinStrings(const std::vector<std::string>& vec, const std::string& sep)
+{
+	std::string ret;
+
+	for (auto i = vec.begin(), end = vec.end(); i != end; ++i)
+	{
+		ret += *i;
+
+		if (i + 1 != end)
+			ret += sep;
+	}
+
+	return ret;
+}

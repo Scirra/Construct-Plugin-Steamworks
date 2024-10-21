@@ -13,3 +13,6 @@ std::vector<ExtensionParameter> UnpackExtensionParameterArray(size_t paramCount,
 std::vector<NamedExtensionParameterPOD> PackNamedExtensionParameters(const std::map<std::string, ExtensionParameter>& params);
 
 void DebugLog(const std::string& message);
+
+std::vector<std::string> SplitString(const std::string& str, const std::string& sep);
+std::string JoinStrings(const std::vector<std::string>& vec, const std::string& sep);

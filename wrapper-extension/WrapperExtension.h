@@ -30,11 +30,15 @@ public:
 	void OnShowOverlayURLMessage(const std::string& url, bool isModal);
 	void OnSetAchievementMessage(const std::string& name, double asyncId);
 	void OnClearAchievementMessage(const std::string& name, double asyncId);
+	void OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId);
+	void OnInstallDLCMessage(AppId_t appId);
+	void OnUninstallDLCMessage(AppId_t appId);
 
 	// Steam events (called via SteamCallbacks class)
 	void OnGameOverlayActivated(bool isShowing);
 	void OnUserStatsReceived(EResult eResult);
 	void OnUserStatsStored(EResult eResult);
+	void OnDLCInstalledCallback(AppId_t appId);
 
 protected:
 	IApplication* iApplication;

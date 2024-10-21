@@ -25,7 +25,8 @@
 				},
 				"aceCategories": {
 					"steamworks": "Steamworks",
-					"stats-achievements": "Stats / Achievements"
+					"stats-achievements": "Stats / Achievements", 
+					"dlc": "DLC"
 				},
 				"conditions": {
 					"is-available": {
@@ -79,6 +80,27 @@
 								"desc": "The 'API Name' of the achievement."
 							}
 						}
+					},
+					"on-dlc-installed-check-complete": {
+						"list-name": "On DLC installed check complete",
+						"display-text": "On DLC installed check complete",
+						"description": "Triggered after 'Check DLC installed' when the status is updated."
+					},
+					"is-dlc-installed": {
+						"list-name": "Is DLC installed",
+						"display-text": "Is DLC [i]{0}[/i] installed",
+						"description": "Check if DLC is installed by its app ID. Note this can only be used after 'On DLC installed check complete' triggers.",
+						"params": {
+							"app-id": {
+								"name": "App ID",
+								"desc": "The DLC app ID to check if installed."
+							}
+						}
+					},
+					"on-dlc-installed": {
+						"list-name": "On DLC installed",
+						"display-text": "On DLC installed",
+						"description": "Triggered after the 'Install DLC' action when the DLC has been installed."
 					}
 				},
 				"actions": {
@@ -138,6 +160,39 @@
 								"desc": "The 'API Name' of the achievement."
 							}
 						}
+					},
+					"check-dlc-installed": {
+						"list-name": "Check DLC installed",
+						"display-text": "Check DLC [i]{0}[/i] installed",
+						"description": "Check the installed status of one or more DLC.",
+						"params": {
+							"app-ids": {
+								"name": "App ID(s)",
+								"desc": "A number of the app ID to check, or a comma-separated string of multiple app IDs to check."
+							}
+						}
+					},
+					"install-dlc": {
+						"list-name": "Install DLC",
+						"display-text": "Install DLC [i]{0}[/i]",
+						"description": "Install DLC by its app ID.",
+						"params": {
+							"app-id": {
+								"name": "App ID",
+								"desc": "The app ID of the DLC to install."
+							}
+						}
+					},
+					"uninstall-dlc": {
+						"list-name": "Uninstall DLC",
+						"display-text": "Uninstall DLC [i]{0}[/i]",
+						"description": "Uninstall DLC by its app ID.",
+						"params": {
+							"app-id": {
+								"name": "App ID",
+								"desc": "The app ID of the DLC to uninstall."
+							}
+						}
 					}
 				},
 				"expressions": {
@@ -176,6 +231,10 @@
 					"achievement": {
 						"description": "In an achievement trigger, the 'API Name' of the achievement.",
 						"translated-name": "Achievement"
+					},
+					"trigger-app-id": {
+						"description": "The app ID for a trigger, e.g. 'On DLC installed'.",
+						"translated-name": "TriggerAppID"
 					}
 				}
 			}

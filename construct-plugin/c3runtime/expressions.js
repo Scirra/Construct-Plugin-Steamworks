@@ -47,5 +47,10 @@ C3.Plugins.Steamworks_Ext.Exps =
 	Achievement()
 	{
 		return this._triggerAchievement;
+	},
+
+	TriggerAppID()
+	{
+		return this._triggerAppId;
 	}
 };

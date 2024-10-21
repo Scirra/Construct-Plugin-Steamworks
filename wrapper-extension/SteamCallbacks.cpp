@@ -25,3 +25,8 @@ void SteamCallbacks::OnUserStatsStored(UserStatsStored_t* pCallback)
 {
 	extension.OnUserStatsStored(pCallback->m_eResult);
 }
+
+void SteamCallbacks::OnDLCInstalled(DlcInstalled_t* pCallback)
+{
+	extension.OnDLCInstalledCallback(pCallback->m_nAppID);
+}

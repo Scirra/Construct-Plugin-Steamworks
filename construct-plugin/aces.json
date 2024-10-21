@@ -131,5 +131,39 @@
 				"returnType": "string"
 			}
 		]
+	},
+	"dlc": {
+		"conditions": [{
+			"id": "on-dlc-installed-check-complete",
+			"scriptName": "OnDLCInstalledCheckComplete",
+			"isTrigger": true
+		}, {
+			"id": "is-dlc-installed",
+			"scriptName": "IsDLCInstalled",
+			"params": [{	"id": "app-id",		"type": "number" }]
+		}, {
+			"id": "on-dlc-installed",
+			"scriptName": "OnDLCInstalled",
+			"isTrigger": true
+		}],
+		"actions": [{
+			"id": "check-dlc-installed",
+			"scriptName": "CheckDLCInstalled",
+			"isAsync": true,
+			"params": [{	"id": "app-ids",	"type": "any" }]
+		}, {
+			"id": "install-dlc",
+			"scriptName": "InstallDLC",
+			"params": [{	"id": "app-id",		"type": "number" }]
+		}, {
+			"id": "uninstall-dlc",
+			"scriptName": "UninstallDLC",
+			"params": [{	"id": "app-id",		"type": "number" }]
+		}],
+		"expressions": [{
+			"id": "trigger-app-id",
+			"expressionName": "TriggerAppID",
+			"returnType": "number"
+		}]
 	}
 }

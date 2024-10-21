@@ -21,5 +21,26 @@ C3.Plugins.Steamworks_Ext.Acts =
 	async ClearAchievement(achievement)
 	{
 		await this.clearAchievement(achievement);
+	},
+
+	async CheckDLCInstalled(appIds)
+	{
+		let appIdArr;
+		if (typeof appIds === "number")
+			appIdArr = [appIds];
+		else
+			appIdArr = appIds.split(",").map(s => Number(s));
+
+		await this.checkDlcInstalled(appIdArr);
+	},
+
+	InstallDLC(appId)
+	{
+		this.installDlc(appId);
+	},
+
+	UninstallDLC(appId)
+	{
+		this.uninstallDlc(appId);
 	}
 };
