@@ -1,6 +1,6 @@
 # Steamworks for Windows & Linux
 
-This repository contains code for the [Steamworks Construct plugin](https://www.construct.net/en/make-games/addons/1105/steamworks-webview2), and its associated wrapper extension (a DLL which integrates the Steamworks SDK). This allows integrating Construct projects with Steam using the Windows WebView2 and Linux CEF export options. There are two main components in this repository:
+This repository contains code for the [Steamworks Construct plugin](https://www.construct.net/en/make-games/addons/1105/steamworks), and its associated wrapper extension (a DLL which integrates the Steamworks SDK). This allows integrating Construct projects with Steam using the Windows WebView2 and Linux CEF export options. There are two main components in this repository:
 
 - *construct-plugin*: the Construct plugin, written in JavaScript using the [Construct Addon SDK](https://github.com/Scirra/Construct-Addon-SDK)
 - *wrapper-extension*: a Visual Studio 2022 project to build the wrapper extension DLL, written in C++. This also supports using CMake to build the Linux wrapper extension.
@@ -49,7 +49,7 @@ For convenience these SOs are provided in this repository. However if you make c
 
 Use [developer mode](https://www.construct.net/en/make-games/manuals/addon-sdk/guide/using-developer-mode) for a more convenient way to test the Construct plugin during development.
 
-For details about configuring and exporting projects for Steam, refer to the [Steamworks plugin documentation](https://www.construct.net/en/make-games/addons/1105/steamworks-webview2/documentation).
+For details about configuring and exporting projects for Steam, refer to the [Steamworks plugin documentation](https://www.construct.net/en/make-games/addons/1105/steamworks/documentation).
 
 A sample Construct project is provided in this repository which is just a technical test of the plugin features.
 
