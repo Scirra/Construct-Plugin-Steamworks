@@ -44,7 +44,7 @@
 #define DECLSPEC_NOVTABLE
 #define DLLEXPORT
 
-// Include Steamworks SDK for Linux.
+// Include Steamworks SDK for macOS/Linux.
 #if __has_include("steamworks-sdk/public/steam/steam_api.h")
 
 	#include "steamworks-sdk/public/steam/steam_api.h"

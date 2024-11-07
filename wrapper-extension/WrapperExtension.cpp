@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "WrapperExtension.h"
 
-#ifdef __linux__
+#if defined(__APPLE__) || defined(__linux__)
 #include <stdlib.h>		// for setenv()
 #endif
 

@@ -2,7 +2,9 @@
 #include "pch.h"
 #include "Utils.h"
 
-#ifdef __linux__
+#ifdef __APPLE__
+#import <Foundation/Foundation.h>
+#elif __linux__
 #include <iostream>		// std::cout (for DebugLog)
 #endif
 
@@ -119,6 +121,9 @@ void DebugLog(const std::string& message)
 #ifdef _WIN32
 	std::wstring messageW = Utf8ToWide(message);
 	OutputDebugString(messageW.c_str());
+#elif __APPLE__
+    NSString* nsStr = [NSString stringWithUTF8String:message.c_str()];
+    NSLog(@"%@", nsStr);
 #else
 	std::cout << message;
 #endif

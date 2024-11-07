@@ -12,3 +12,7 @@
 /build
 /wrapper-extension/build
 /wrapper-extension/SteamExt/x64
+*.xcworkspacedata
+*.xcuserstate
+*.xcbkptlist
+.DS_Store
