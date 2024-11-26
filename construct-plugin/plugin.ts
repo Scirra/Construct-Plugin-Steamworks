@@ -80,6 +80,18 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		});
 
 		this._info.AddFileDependency({
+			filename: "steamworks.ext.dylib",
+			type: "wrapper-extension",
+			platform: "macos-universal"
+		});
+
+		this._info.AddFileDependency({
+			filename: "libsteam_api.dylib",
+			type: "wrapper-extension",
+			platform: "macos-universal"
+		});
+
+		this._info.AddFileDependency({
 			filename: "steamworks-x64.ext.so",
 			type: "wrapper-extension",
 			platform: "linux-x64"
