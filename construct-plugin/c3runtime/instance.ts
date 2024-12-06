@@ -16,7 +16,6 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	_currentGameLanguage: string;
 	_availableGameLanguages: string;
 
-	_isOverlayEnabled: boolean;
 	_loadingTimerId: number;
 	_triggerAchievement: string;
 
@@ -41,7 +40,6 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		this._currentGameLanguage = "";
 		this._availableGameLanguages = "";
 		let isDevelopmentMode = false;
-		this._isOverlayEnabled = false;
 
 		this._dlcSet = new Set();
 
@@ -58,10 +56,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			// Read the optional app ID, development mode and overlay properties for initialization.
 			initAppIdStr = (properties[0] as string).trim();
 			isDevelopmentMode = properties[1] as boolean;
-			this._isOverlayEnabled = properties[2] as boolean;
 		}
 
 		// Listen for overlay shown/hidden events from the extension.
+		// NOTE: this is implemented but currently non-functional as the Steam overlay currently will always use
+		// its fallback mode, which does not fire overlay events.
 		this._addWrapperExtensionMessageHandler("on-game-overlay-activated", e => this._onGameOverlayActivated(e as JSONObject));
 
 		this._addWrapperExtensionMessageHandler("on-dlc-installed", e => this._onDlcInstalled(e as JSONObject));
@@ -106,18 +105,6 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this._steamUILanguage = result["steamUILanguage"] as string;
 			this._currentGameLanguage = result["currentGameLanguage"] as string;
 			this._availableGameLanguages = result["availableGameLanguages"] as string;
-
-			// Steam initialized OK. If the overlay is enabled, tell the D3D11Overlay extension to create its overlay
-			// for Steam to render its overlay in to. If the overlay is disabled Steam appears to fail to create
-			// its overlay as it doesn't support WebView2, but it does have fallbacks, and the setting allows using
-			// those fallbacks if preferable for any reason.
-			if (this._isOverlayEnabled)
-			{
-				this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "create-overlay", [
-					false,		// isTransparent - use opaque overlay as Steam overlay doesn't work with alpha
-					false		// initiallyShowing - start off hidden and only show when overlay activated
-				]);
-			}
 		}
 	}
 	
@@ -144,15 +131,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		this._sendWrapperExtensionMessage("run-callbacks");
 	}
 
+	// NOTE: implemented but currently non-functional
 	_onGameOverlayActivated(e: JSONObject)
 	{
 		const isShowing = e["isShowing"] as boolean;
-
-		if (this._isOverlayEnabled)
-		{
-			// Tell the D3D11Overlay extension to show/hide its overlay according to the visibility of the Steam Overlay.
-			this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
-		}
 
 		// Dispatch scripting event and fire appropriate trigger
 		// TypeScript note: cast to 'any' to add custom properties

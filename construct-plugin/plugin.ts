@@ -34,8 +34,7 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		
 		this._info.SetProperties([
 			new SDK.PluginProperty("text", "app-id"),
-			new SDK.PluginProperty("check", "development-mode", true),
-			new SDK.PluginProperty("check", "enable-overlay", true)
+			new SDK.PluginProperty("check", "development-mode", true)
 		]);
 		
 		SDK.Lang.PopContext();		// .properties
@@ -56,12 +55,6 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		});
 		
 		this._info.AddFileDependency({
-			filename: "D3D11Overlay_x86.ext.dll",
-			type: "wrapper-extension",
-			platform: "windows-x86"
-		});
-		
-		this._info.AddFileDependency({
 			filename: "Steam_x64.ext.dll",
 			type: "wrapper-extension",
 			platform: "windows-x64"
@@ -69,12 +62,6 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		
 		this._info.AddFileDependency({
 			filename: "steam_api64.dll",
-			type: "wrapper-extension",
-			platform: "windows-x64"
-		});
-		
-		this._info.AddFileDependency({
-			filename: "D3D11Overlay_x64.ext.dll",
 			type: "wrapper-extension",
 			platform: "windows-x64"
 		});

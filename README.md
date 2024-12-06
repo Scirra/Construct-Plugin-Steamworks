@@ -22,7 +22,6 @@ The Construct plugin requires 3 DLLs, each in the x86 (32-bit) and x64 (64-bit) 
 
 - **Steam_x86.ext.dll** / **Steam_x64.ext.dll** - the wrapper extension DLL, built from the *wrapper-extension* files
 - **steam_api.dll** / **steam_api64.dll** - the Steamworks API DLLs from the Steamworks SDK
-- **D3D11Overlay_x86.ext.dll** / **D3D11Overlay_x64.ext.dll** - an optional wrapper extension used to display a D3D11 surface over the application, solely so the Steam Overlay can render in to it, as bugs and limitations in the Steam Overlay make it impossible to display over the WebView2 control directly. (If missing the in-game Steam Overlay will not be supported, but Steam will revert to fallbacks and everything else will still work.)
 
 For convenience these DLLs are provided in this repository. However if you make changes you may want to replace some of these DLLs.
 

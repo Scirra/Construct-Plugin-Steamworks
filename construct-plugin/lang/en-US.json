@@ -17,10 +17,6 @@
 					"development-mode": {
 						"name": "Development mode",
 						"desc": "Check to enable development mode, which sets the app ID and disables automatic restarting. Turn off for release."
-					},
-					"enable-overlay": {
-						"name": "Enable overlay",
-						"desc": "Enable the Steam Overlay (using workaround). Disabling causes Steam to revert to fallbacks."
 					}
 				},
 				"aceCategories": {

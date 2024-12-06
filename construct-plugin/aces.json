@@ -11,10 +11,12 @@
 				"scriptName": "IsRunningOnSteamDeck"
 			}, {
 				"id": "on-overlay-shown",
+				"isDeprecated": true,
 				"scriptName": "OnGameOverlayShown",
 				"isTrigger": true
 			}, {
 				"id": "on-overlay-hidden",
+				"isDeprecated": true,
 				"scriptName": "OnGameOverlayHidden",
 				"isTrigger": true
 			}
