@@ -234,14 +234,6 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 		// objects that listen for callbacks, which SteamCallbacks does, hence it being a separate class.
 		steamCallbacks.reset(new SteamCallbacks(*this));
 
-		// Request the current user stats. This is necessary before achievements or other user stats can
-		// be used. This works asynchronously and calls OnUserStatsReceived() when completed.
-		// Currently nothing actually waits for that to complete - this is just called on startup and
-		// it's assumed that by the time the player tries to do something like unlock an achievement
-		// this will have completed (and if it hasn't, or it failed, then unlocking achievements will
-		// fail too).
-		SteamUserStats()->RequestCurrentStats();
-
 		// Get current steam user ID for accessing account IDs
 		CSteamID steamId = SteamUser()->GetSteamID();
 
