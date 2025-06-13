@@ -2,9 +2,13 @@
 #include "pch.h"
 #include "WrapperExtension.h"
 
+#include "json.hpp"
+
 #if defined(__APPLE__) || defined(__linux__)
 #include <stdlib.h>		// for setenv()
 #endif
+
+const char* COMPONENT_ID = "scirra-steam";
 
 //////////////////////////////////////////////////////
 // Boilerplate stuff
@@ -45,23 +49,56 @@ WrapperExtension::WrapperExtension(IApplication* iApplication_)
 	: iApplication(iApplication_),
 	  didSteamInitOk(false)
 {
-	DebugLog("[SteamExt] Loaded extension\n");
+	LogMessage("Loaded extension");
 
 	// Tell the host application the SDK version used. Don't change this.
 	iApplication->SetSdkVersion(WRAPPER_EXT_SDK_VERSION);
 
 	// Register the "scirra-steam" component for JavaScript messaging
-	iApplication->RegisterComponentId("scirra-steam");
+	iApplication->RegisterComponentId(COMPONENT_ID);
 }
 
 void WrapperExtension::Init()
 {
 	// Called during startup after all other extensions have been loaded.
+	// Parse the content of package.json and read the exported app ID and development mode properties.
+	// These are exported with the SetWrapperExportProperties() method and end up in package.json like this:
+	//{
+	//	...
+	//	"exported-properties": {
+	//		"scirra-steam": {
+	//			"app-id": "480",
+	//			"development-mode": true
+	//		}
+	//	}
+	//}
+	// Note the app ID is a string.
+	std::string appId;
+	bool isDevelopmentMode = false;
+
+	try {
+		auto packageJson = nlohmann::json::parse(iApplication->GetPackageJsonContent());
+		const auto& steamProps = packageJson["exported-properties"][COMPONENT_ID];
+		appId = steamProps["app-id"].get<std::string>();
+		TrimString(appId);
+		isDevelopmentMode = steamProps["development-mode"].get<bool>();
+
+		std::stringstream ss;
+		ss << "Parsed package JSON (app ID " << appId << ", development mode " << isDevelopmentMode << ")";
+		LogMessage(ss.str());
+	}
+	catch (...)
+	{
+		LogMessage("Failed to read properties package JSON");
+		return;
+	}
+
+	InitSteamworksSDK(appId, isDevelopmentMode);
 }
 
 void WrapperExtension::Release()
 {
-	DebugLog("[SteamExt] Releasing extension\n");
+	LogMessage("Releasing extension");
 
 	if (didSteamInitOk)
 	{
@@ -71,6 +108,84 @@ void WrapperExtension::Release()
 		// Shut down Steam API.
 		SteamAPI_Shutdown();
 	}
+}
+
+void WrapperExtension::InitSteamworksSDK(const std::string& initAppId, bool isDevelopmentMode)
+{
+	// Before calling SteamAPI_Init(), check if the plugin has an app ID set.
+	if (!initAppId.empty())
+	{
+		// If development mode is set and an app ID is provided, then store the app ID
+		// in the SteamAppId environment variable for this process. This is undocumented but
+		// works OK and is used in other Steam codebases, and is a more convenient way to specify
+		// the app ID during testing than having to use steam_appid.txt. Without this (if no
+		// app ID is provided, or if development mode is turned off for release) then Steam will
+		// determine the app ID automatically (including checking steam_appid.txt if anyone
+		// prefers using that), but initialization will fail if Steam cannot determine any app ID.
+		if (isDevelopmentMode)
+		{
+#ifdef _WIN32
+			std::wstring initAppIdW = Utf8ToWide(initAppId);
+			SetEnvironmentVariable(L"SteamAppId", initAppIdW.c_str());
+#else
+			setenv("SteamAppId", initAppId.c_str(), 1);
+#endif
+		}
+		else
+		{
+			// When not in development mode, call SteamAPI_RestartAppIfNecessary() with the
+			// provided app ID and quit the app if it returns true. This requires the app ID
+			// as a number, so convert the string to a number (ignoring any exception). 
+			// The presence of the SteamAppId environment variable (or steam_appid.txt)
+			// suppresses SteamAPI_RestartAppIfNecessary() returning true, so this is
+			// only done if the development mode setting is turned off.
+			uint32 appId = 0;
+			try {
+				appId = std::stoul(initAppId);
+			}
+			catch (...)
+			{
+				appId = 0;				// ignore exception
+			}
+
+			if (appId != 0 && SteamAPI_RestartAppIfNecessary(appId))
+			{
+				LogMessage("SteamAPI_RestartAppIfNecessary() returned true; quitting app");
+#ifdef _WIN32
+				PostQuitMessage(0);
+#else
+				exit(0);
+#endif
+
+				// There's no point doing anything else now the app is quitting, so return.
+				return;
+			}
+		}
+	}
+
+	// Initialize the Steam API.
+	didSteamInitOk = SteamAPI_Init();
+	if (didSteamInitOk)
+	{
+		LogMessage("Steam API initialized successfully");
+	}
+	else
+	{
+		LogMessage("Steam API failed to initialize");
+	}
+}
+
+void WrapperExtension::LogMessage(const std::string& msg)
+{
+	// Log messages both to the browser console with the LogToConsole() method, and also to the debug output
+	// with the DebugLog() helper function, to ensure whichever log we're looking at includes the log messages.
+	std::stringstream ss;
+	ss << "[Steamworks] " << msg;
+	iApplication->LogToConsole(IApplication::LogLevel::normal, ss.str().c_str());
+	
+	// Add trailing newline for debug output
+	ss << "\n";
+	DebugLog(ss.str().c_str());
 }
 
 #ifdef _WIN32
@@ -94,7 +209,7 @@ void WrapperExtension::OnGameOverlayActivated(bool isShowing)
 void WrapperExtension::OnUserStatsReceived(EResult eResult)
 {
 	// Not currently used. Could be used to check RequestCurrentStats() completed successfully.
-	DebugLog("[SteamExt] On user stats received\n");
+	LogMessage("On user stats received");
 }
 
 void WrapperExtension::OnUserStatsStored(EResult eResult)
@@ -116,10 +231,7 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 {
 	if (messageId == "init")
 	{
-		const std::string& initAppId = params[0].GetString();
-		bool isDevelopmentMode = params[1].GetBool();
-
-		OnInitMessage(initAppId, isDevelopmentMode, asyncId);
+		OnInitMessage(asyncId);
 	}
 	else if (messageId == "run-callbacks")
 	{
@@ -170,65 +282,12 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 	}
 }
 
-void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelopmentMode, double asyncId)
+void WrapperExtension::OnInitMessage(double asyncId)
 {
-	// Before calling SteamAPI_Init(), check if the plugin has an app ID set.
-	if (!initAppId.empty())
-	{
-		// If development mode is set and an app ID is provided, then store the app ID
-		// in the SteamAppId environment variable for this process. This is undocumented but
-		// works OK and is used in other Steam codebases, and is a more convenient way to specify
-		// the app ID during testing than having to use steam_appid.txt. Without this (if no
-		// app ID is provided, or if development mode is turned off for release) then Steam will
-		// determine the app ID automatically (including checking steam_appid.txt if anyone
-		// prefers using that), but initialization will fail if Steam cannot determine any app ID.
-		if (isDevelopmentMode)
-		{
-#ifdef _WIN32
-			std::wstring initAppIdW = Utf8ToWide(initAppId);
-			SetEnvironmentVariable(L"SteamAppId", initAppIdW.c_str());
-#else
-			setenv("SteamAppId", initAppId.c_str(), 1);
-#endif
-		}
-		else
-		{
-			// When not in development mode, call SteamAPI_RestartAppIfNecessary() with the
-			// provided app ID and quit the app if it returns true. This requires the app ID
-			// as a number, so convert the string to a number (ignoring any exception). 
-			// The presence of the SteamAppId environment variable (or steam_appid.txt)
-			// suppresses SteamAPI_RestartAppIfNecessary() returning true, so this is
-			// only done if the development mode setting is turned off.
-			uint32 appId = 0;
-			try {
-				appId = std::stoul(initAppId);
-			}
-			catch (...)
-			{
-				appId = 0;				// ignore exception
-			}
-
-			if (appId != 0 && SteamAPI_RestartAppIfNecessary(appId))
-			{
-				DebugLog("[SteamExt] SteamAPI_RestartAppIfNecessary() returned true; quitting app\n");
-#ifdef _WIN32
-				PostQuitMessage(0);
-#else
-				exit(0);
-#endif
-
-				// There's no point doing anything else now the app is quitting, so return.
-				return;
-			}
-		}
-	}
-
-	// Initialize the Steam API.
-	didSteamInitOk = SteamAPI_Init();
+	// Note the actual initialization is done in InitSteamworksSDK(). This just sends the result
+	// of initialization back to the Construct plugin.
 	if (didSteamInitOk)
 	{
-		DebugLog("[SteamExt] Steam API initialized successfully\n");
-
 		// Create SteamCallbacks class.
 		// Note the Steamworks SDK documentation states that Steam should be initialized before creating
 		// objects that listen for callbacks, which SteamCallbacks does, hence it being a separate class.
@@ -257,8 +316,6 @@ void WrapperExtension::OnInitMessage(const std::string& initAppId, bool isDevelo
 	}
 	else
 	{
-		DebugLog("[SteamExt] Steam API failed to initialize\n");
-
 		// If Steam did not initialize successfully none of the other details can be sent,
 		// so just send a response with isAvailable set to false
 		SendAsyncResponse({

@@ -17,6 +17,9 @@ public:
 	void OnMainWindowCreated();
 #endif
 
+	void InitSteamworksSDK(const std::string& initAppId, bool isDevelopmentMode);
+	void LogMessage(const std::string& msg);
+
 	// Web messaging methods
 	void OnWebMessage(const char* messageId, size_t paramCount, const ExtensionParameterPOD* paramArr, double asyncId);
 	void HandleWebMessage(const std::string& messageId, const std::vector<ExtensionParameter>& params, double asyncId);
@@ -25,7 +28,7 @@ public:
 	void SendAsyncResponse(const std::map<std::string, ExtensionParameter>& params, double asyncId);
 
 	// Handler methods for specific kinds of message
-	void OnInitMessage(const std::string& initAppId, bool isDevelopmentMode, double asyncId);
+	void OnInitMessage(double asyncId);
 	void OnShowOverlayMessage(size_t option);
 	void OnShowOverlayURLMessage(const std::string& url, bool isModal);
 	void OnSetAchievementMessage(const std::string& name, double asyncId);

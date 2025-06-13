@@ -16,3 +16,5 @@ void DebugLog(const std::string& message);
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& sep);
 std::string JoinStrings(const std::vector<std::string>& vec, const std::string& sep);
+
+void TrimString(std::string& str);

@@ -59,6 +59,7 @@
 #include <vector>		// std::vector
 #include <map>			// std::map
 #include <string>		// std::string, std::wstring
+#include <sstream>		// std::stringstream
 #include <memory>		// std::unique_ptr
 
 // SDK utilities

@@ -36,6 +36,8 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 			new SDK.PluginProperty("text", "app-id"),
 			new SDK.PluginProperty("check", "development-mode", true)
 		]);
+
+		this._info.SetWrapperExportProperties("scirra-steam", ["app-id", "development-mode"]);
 		
 		SDK.Lang.PopContext();		// .properties
 		

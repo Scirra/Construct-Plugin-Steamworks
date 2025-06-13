@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include "IExtension.h"
 
 // Current SDK version.
@@ -37,4 +38,22 @@ public:
 	virtual void SetSharedPtr(const char* id, void* ptr) = 0;
 	virtual void* GetSharedPtr(const char* id) = 0;
 	virtual void RemoveSharedPtr(const char* id) = 0;
+
+	// Look up the full path for a special picker tag as used by File System, e.g. "<documents>".
+	// Windows only.
+	virtual const char* GetPathForKnownPickerTag(const char* pickerTag) = 0;
+	
+	// Helper function for logging to browser console rather than debug output.
+	enum class LogLevel : uint32_t {
+		normal,
+		warning,
+		error
+	};
+	virtual void LogToConsole(LogLevel level, const char* message) = 0;
+	
+	// Returns a number for versioning of this interface.
+	virtual uint32_t GetWrapperApiVersion() = 0;
+	
+	// Returns a string with the full content of package.json.
+	virtual const char* GetPackageJsonContent() = 0;
 };
