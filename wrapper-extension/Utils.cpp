@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "Utils.h"
 
+#include <algorithm>	// std::find_if
+
 #ifdef __APPLE__
 #import <Foundation/Foundation.h>
 #elif __linux__
