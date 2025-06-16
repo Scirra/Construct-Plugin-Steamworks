@@ -34,12 +34,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		this._staticAccountKey = "";
 		this._personaName = "";
 		this._playerSteamLevel = 0;
-		let initAppIdStr = "";			// app ID property, only used during initialization
 		this._appId = 0;
 		this._steamUILanguage = "";
 		this._currentGameLanguage = "";
 		this._availableGameLanguages = "";
-		let isDevelopmentMode = false;
 
 		this._dlcSet = new Set();
 
@@ -50,13 +48,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		this._triggerAchievement = "";
 		this._triggerAppId = 0;
 		
-		const properties = this._getInitProperties();
-		if (properties)
-		{
-			// Read the optional app ID, development mode and overlay properties for initialization.
-			initAppIdStr = (properties[0] as string).trim();
-			isDevelopmentMode = properties[1] as boolean;
-		}
+		// Note the properties for App ID and development mode are not read here - instead they are exported
+		// to the package.json file with the call to SetWrapperExportProperties(). The wrapper extension
+		// then reads these values and sends the app ID when responding to the "init" message.
+		//const properties = this._getInitProperties();
 
 		// Listen for overlay shown/hidden events from the extension.
 		// NOTE: this is implemented but currently non-functional as the Steam overlay currently will always use
@@ -69,7 +64,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (this._isWrapperExtensionAvailable())
 		{
 			// Run async init during loading.
-			this.runtime.sdk.addLoadPromise(this._init(initAppIdStr, isDevelopmentMode));
+			this.runtime.sdk.addLoadPromise(this._init());
 
 			// Steamworks needs the app to regularly call SteamAPI_RunCallbacks(), which is done by sending
 			// the "run-callbacks" message every tick. However Construct's Tick() callback only starts
@@ -82,11 +77,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		}
 	}
 	
-	async _init(initAppIdStr: string, isDevelopmentMode: boolean)
+	async _init()
 	{
 		// Send init message to wrapper extension and wait for result.
 		// Pass the app ID specified in properties to optionally tell Steam which app ID to use.
-		const result_ = await this._sendWrapperExtensionMessageAsync("init", [initAppIdStr, isDevelopmentMode]);
+		const result_ = await this._sendWrapperExtensionMessageAsync("init");
 
 		const result = result_ as JSONObject;
 
