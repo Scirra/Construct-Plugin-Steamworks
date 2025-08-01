@@ -45,18 +45,6 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		
 		// Add necessary DLLs as wrapper extension dependencies.
 		this._info.AddFileDependency({
-			filename: "Steam_x86.ext.dll",
-			type: "wrapper-extension",
-			platform: "windows-x86"
-		});
-		
-		this._info.AddFileDependency({
-			filename: "steam_api.dll",
-			type: "wrapper-extension",
-			platform: "windows-x86"
-		});
-		
-		this._info.AddFileDependency({
 			filename: "Steam_x64.ext.dll",
 			type: "wrapper-extension",
 			platform: "windows-x64"
