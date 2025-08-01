@@ -18,10 +18,10 @@ To build the wrapper extension for Windows, you will need:
 - [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) or newer (the *Community* edition is free)
 - The [Steamworks SDK](https://partner.steamgames.com/doc/sdk) - download and extract the *sdk* subfolder in the *steamworks-sdk* subfolder such that the file `steamworks-sdk\public\steam\steam_api.h` exists.
 
-The Construct plugin requires 3 DLLs, each in the x86 (32-bit) and x64 (64-bit) architectures, for a total of 6 DLL files. These are:
+The Construct plugin requires 2 DLLs, both in the x64 (64-bit) architecture (the only architecture currently supported). These are:
 
-- **Steam_x86.ext.dll** / **Steam_x64.ext.dll** - the wrapper extension DLL, built from the *wrapper-extension* files
-- **steam_api.dll** / **steam_api64.dll** - the Steamworks API DLLs from the Steamworks SDK
+- **Steam_x64.ext.dll** - the wrapper extension DLL, built from the *wrapper-extension* files
+- **steam_api64.dll** - the Steamworks API DLLs from the Steamworks SDK
 
 For convenience these DLLs are provided in this repository. However if you make changes you may want to replace some of these DLLs.
 
