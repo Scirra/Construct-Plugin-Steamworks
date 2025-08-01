@@ -16,3 +16,4 @@
 *.xcuserstate
 *.xcbkptlist
 .DS_Store
+wrapper-extension/SteamExt.vcxproj.user
