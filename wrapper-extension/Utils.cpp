@@ -183,3 +183,22 @@ void TrimString(std::string& str)
 	TrimStringRight(str);
 	TrimStringLeft(str);
 }
+
+const char* hexNibbles = "0123456789abcdef";
+
+std::string BytesToHexString(const std::vector<uint8_t>& bytes)
+{
+	std::string ret;
+	ret.reserve(bytes.size() * 2);
+
+	for (const uint8_t& byte: bytes)
+	{
+		uint8_t upperNibble = (byte >> 4);
+		uint8_t lowerNibble = (byte & 0x0F);
+
+		ret += hexNibbles[upperNibble];
+		ret += hexNibbles[lowerNibble];
+	}
+
+	return ret;
+}

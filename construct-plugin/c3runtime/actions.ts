@@ -25,7 +25,7 @@ C3.Plugins.Steamworks_Ext.Acts =
 		await this.clearAchievement(achievement);
 	},
 
-	async CheckDLCInstalled(appIds: string | number)
+	async CheckDLCInstalled(this: SDKInstanceClass, appIds: string | number)
 	{
 		let appIdArr;
 		if (typeof appIds === "number")
@@ -36,13 +36,23 @@ C3.Plugins.Steamworks_Ext.Acts =
 		await this.checkDlcInstalled(appIdArr);
 	},
 
-	InstallDLC(appId: number)
+	InstallDLC(this: SDKInstanceClass, appId: number)
 	{
 		this.installDlc(appId);
 	},
 
-	UninstallDLC(appId: number)
+	UninstallDLC(this: SDKInstanceClass, appId: number)
 	{
 		this.uninstallDlc(appId);
+	},
+
+	async GetAuthTicketForWebApi(this: SDKInstanceClass, identity: string)
+	{
+		await this.getAuthTicketForWebApi(identity);
+	},
+
+	CancelAuthTicket(this: SDKInstanceClass, authTicket: number)
+	{
+		this.cancelAuthTicket(authTicket);
 	}
 };

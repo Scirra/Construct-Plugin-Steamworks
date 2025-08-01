@@ -47,7 +47,8 @@ void WrapperExtension::SendAsyncResponse(const std::map<std::string, ExtensionPa
 // WrapperExtension
 WrapperExtension::WrapperExtension(IApplication* iApplication_)
 	: iApplication(iApplication_),
-	  didSteamInitOk(false)
+	  didSteamInitOk(false),
+	  pendingAuthTicketForWebApiAsyncId(-1)
 {
 	LogMessage("Loaded extension");
 
@@ -280,6 +281,18 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 
 		OnUninstallDLCMessage(appId);
 	}
+	else if (messageId == "get-auth-ticket-for-web-api")
+	{
+		const std::string& identity = params[0].GetString();
+
+		OnGetAuthTicketForWebApi(identity, asyncId);
+	}
+	else if (messageId == "cancel-auth-ticket")
+	{
+		HAuthTicket hAuthTicket = static_cast<HAuthTicket>(params[0].GetNumber());
+
+		OnCancelAuthTicket(hAuthTicket);
+	}
 }
 
 void WrapperExtension::OnInitMessage(double asyncId)
@@ -424,3 +437,69 @@ void WrapperExtension::OnUninstallDLCMessage(AppId_t appId)
 	SteamApps()->UninstallDLC(appId);
 }
 
+void WrapperExtension::OnGetAuthTicketForWebApi(const std::string& identity, double asyncId)
+{
+	// Save the pending async ID and wait for the GetTicketForWebApiResponse_t event, which then calls
+	// OnGetTicketForWebApiResponse(). Note that as there does not appear to be any way to correlate
+	// this call with the resulting event, this can only correctly handle one request at a time.
+	// Therefore if another call is made while another is still pending, return a failure.
+	if (pendingAuthTicketForWebApiAsyncId != -1)
+	{
+		LogMessage("GetAuthTicketForWebApi(): another call is in progress so failing");
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	pendingAuthTicketForWebApiAsyncId = asyncId;
+
+	// If the identity is an empty string, pass nullptr instead of a string to indicate none provided.
+	SteamUser()->GetAuthTicketForWebApi(identity.empty() ? nullptr : identity.c_str());
+}
+
+void WrapperExtension::OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t* pCallback)
+{
+	// Use the asyncId from the call to OnGetAuthTicketForWebApi().
+	double asyncId = pendingAuthTicketForWebApiAsyncId;
+	pendingAuthTicketForWebApiAsyncId = -1;
+
+	// If the asyncId is -1, then we weren't expecting this callback. Just log a message and bail out.
+	if (asyncId == -1)
+	{
+		LogMessage("GetAuthTicketForWebApi() callback ignored due to no async id");
+		return;
+	}
+
+	if (pCallback->m_eResult != k_EResultOK || pCallback->m_hAuthTicket == k_HAuthTicketInvalid)
+	{
+		// Handle failure result
+		LogMessage("GetAuthTicketForWebApi() failed: EResult " + std::to_string(pCallback->m_eResult));
+
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+	}
+	else
+	{
+		// Success. Convert the ticket binary data to a hex string (validating the data looks OK).
+		// Also note HAuthTicket is really a uint32 and so can safely be returned to JavaScript as a number.
+		std::string ticketHexStr;
+		if (pCallback->m_cubTicket > 0 && pCallback->m_cubTicket < GetTicketForWebApiResponse_t::k_nCubTicketMaxLength)
+		{
+			std::vector<uint8_t> ticketBytes(pCallback->m_rgubTicket, pCallback->m_rgubTicket + pCallback->m_cubTicket);
+			ticketHexStr = BytesToHexString(ticketBytes);
+		}
+
+		SendAsyncResponse({
+			{ "isOk", true },
+			{ "authTicket", static_cast<double>(pCallback->m_hAuthTicket) },
+			{ "ticketHexStr", ticketHexStr }
+		}, asyncId);
+	}
+}
+
+void WrapperExtension::OnCancelAuthTicket(HAuthTicket hAuthTicket)
+{
+	SteamUser()->CancelAuthTicket(hAuthTicket);
+}

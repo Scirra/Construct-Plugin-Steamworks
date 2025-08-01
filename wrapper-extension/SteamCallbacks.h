@@ -15,4 +15,5 @@ protected:
 	STEAM_CALLBACK(SteamCallbacks, OnUserStatsReceived, UserStatsReceived_t);
 	STEAM_CALLBACK(SteamCallbacks, OnUserStatsStored, UserStatsStored_t);
 	STEAM_CALLBACK(SteamCallbacks, OnDLCInstalled, DlcInstalled_t);
+	STEAM_CALLBACK(SteamCallbacks, GetTicketForWebApiResponse, GetTicketForWebApiResponse_t);
 };

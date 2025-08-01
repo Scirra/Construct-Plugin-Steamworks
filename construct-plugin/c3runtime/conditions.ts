@@ -58,5 +58,15 @@ C3.Plugins.Steamworks_Ext.Cnds =
 	OnDLCInstalled(this: SDKInstanceClass)
 	{
 		return true;
+	},
+
+	OnGetAuthTicketForWebApiSuccess(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnGetAuthTicketForWebApiError(this: SDKInstanceClass)
+	{
+		return true;
 	}
 };

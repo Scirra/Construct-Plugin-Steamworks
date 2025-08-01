@@ -54,5 +54,15 @@ C3.Plugins.Steamworks_Ext.Exps =
 	TriggerAppID(this: SDKInstanceClass)
 	{
 		return this._triggerAppId;
+	},
+
+	AuthTicket(this: SDKInstanceClass)
+	{
+		return this.authTicket;
+	},
+
+	TicketHexStr(this: SDKInstanceClass)
+	{
+		return this.ticketHexStr;
 	}
 };

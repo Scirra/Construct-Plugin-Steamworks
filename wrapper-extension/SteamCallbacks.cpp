@@ -30,3 +30,8 @@ void SteamCallbacks::OnDLCInstalled(DlcInstalled_t* pCallback)
 {
 	extension.OnDLCInstalledCallback(pCallback->m_nAppID);
 }
+
+void SteamCallbacks::GetTicketForWebApiResponse(GetTicketForWebApiResponse_t* pCallback)
+{
+	extension.OnGetTicketForWebApiResponse(pCallback);
+}

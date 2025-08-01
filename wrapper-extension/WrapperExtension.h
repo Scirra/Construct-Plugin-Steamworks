@@ -36,16 +36,21 @@ public:
 	void OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId);
 	void OnInstallDLCMessage(AppId_t appId);
 	void OnUninstallDLCMessage(AppId_t appId);
+	void OnGetAuthTicketForWebApi(const std::string& identity, double asyncId);
+	void OnCancelAuthTicket(HAuthTicket hAuthTicket);
 
 	// Steam events (called via SteamCallbacks class)
 	void OnGameOverlayActivated(bool isShowing);
 	void OnUserStatsReceived(EResult eResult);
 	void OnUserStatsStored(EResult eResult);
 	void OnDLCInstalledCallback(AppId_t appId);
+	void OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t* pCallback);
 
 protected:
 	IApplication* iApplication;
 	bool didSteamInitOk;
+
+	double pendingAuthTicketForWebApiAsyncId;
 
 	std::unique_ptr<SteamCallbacks> steamCallbacks;
 };

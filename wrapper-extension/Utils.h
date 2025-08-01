@@ -18,3 +18,5 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 std::string JoinStrings(const std::vector<std::string>& vec, const std::string& sep);
 
 void TrimString(std::string& str);
+
+std::string BytesToHexString(const std::vector<uint8_t>& bytes);

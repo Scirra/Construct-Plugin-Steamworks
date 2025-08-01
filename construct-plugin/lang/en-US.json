@@ -22,7 +22,8 @@
 				"aceCategories": {
 					"steamworks": "Steamworks",
 					"stats-achievements": "Stats / Achievements", 
-					"dlc": "DLC"
+					"dlc": "DLC",
+					"authentication": "Authentication"
 				},
 				"conditions": {
 					"is-available": {
@@ -97,6 +98,16 @@
 						"list-name": "On DLC installed",
 						"display-text": "On DLC installed",
 						"description": "Triggered after the 'Install DLC' action when the DLC has been installed."
+					},
+					"on-get-auth-ticket-for-web-api-success": {
+						"list-name": "On get auth ticket for web api success",
+						"display-text": "On get auth ticket for web api success",
+						"description": "Triggered after 'Get auth ticket for web API' when a ticket was obtained successfully."
+					},
+					"on-get-auth-ticket-for-web-api-error": {
+						"list-name": "On get auth ticket for web api error",
+						"display-text": "On get auth ticket for web api error",
+						"description": "Triggered after 'Get auth ticket for web API' when a ticket failed to be obtained."
 					}
 				},
 				"actions": {
@@ -189,6 +200,28 @@
 								"desc": "The app ID of the DLC to uninstall."
 							}
 						}
+					},
+					"get-auth-ticket-for-web-api": {
+						"list-name": "Get auth ticket for web API",
+						"display-text": "Get auth ticket for web API (identity [i]{0}[/i])",
+						"description": "Retrieve an authentication ticket from the Steamworks API.",
+						"params": {
+							"identity": {
+								"name": "Identity",
+								"desc": "The identity of the remote service that will authenticate the ticket. Leave as an empty string if none was provided."
+							}
+						}
+					},
+					"cancel-auth-ticket": {
+						"list-name": "Cancel auth ticket",
+						"display-text": "Cancel auth ticket [i]{0}[/i]",
+						"description": "Cancel a previously obtained authentication ticket.",
+						"params": {
+							"auth-ticket": {
+								"name": "Auth ticket",
+								"desc": "The authentication ticket to cancel."
+							}
+						}
 					}
 				},
 				"expressions": {
@@ -231,6 +264,14 @@
 					"trigger-app-id": {
 						"description": "The app ID for a trigger, e.g. 'On DLC installed'.",
 						"translated-name": "TriggerAppID"
+					},
+					"auth-ticket": {
+						"description": "The authentication ticket that was obtained (a HAuthTicket in the Steamworks SDK).",
+						"translated-name": "AuthTicket"
+					},
+					"ticket-hex-str": {
+						"description": "The ticket that was created as a hexadecimal string.",
+						"translated-name": "TicketHexStr"
 					}
 				}
 			}

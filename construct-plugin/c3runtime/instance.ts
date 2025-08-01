@@ -22,6 +22,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	_dlcSet: Set<number>;
 	_triggerAppId: number;
 
+	_hAuthTicket: number;
+	_ticketHexStr: string;
+
 	constructor()
 	{
 		// Set "scirra-steam" component ID, matching the same component ID set by the wrapper extension.
@@ -40,6 +43,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		this._availableGameLanguages = "";
 
 		this._dlcSet = new Set();
+
+		this._hAuthTicket = 0;
+		this._ticketHexStr = "";
 
 		// For running callbacks while loading
 		this._loadingTimerId = -1;
@@ -251,7 +257,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	async unlockAchievement(achievement: string)
 	{
 		if (!this._isAvailable)
-			return false;
+			throw new Error("not available");
 		
 		const result_ = await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement]);
 
@@ -278,7 +284,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	async clearAchievement(achievement: string)
 	{
 		if (!this._isAvailable)
-			return false;
+			throw new Error("not available");
 		
 		const result_ = await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement]);
 
@@ -302,7 +308,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	async checkDlcInstalled(appIds: number[])
 	{
 		if (!this._isAvailable)
-			return;
+			throw new Error("not available");
 		
 		const result_ = await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")]);
 
@@ -353,6 +359,61 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			return;
 
 		this._sendWrapperExtensionMessage("uninstall-dlc", [appId]);
+	}
+
+	async getAuthTicketForWebApi(identity = "")
+	{
+		if (!this._isAvailable)
+			throw new Error("not available");
+
+		const result_ = await this._sendWrapperExtensionMessageAsync("get-auth-ticket-for-web-api", [identity]);
+
+		const result = result_ as JSONObject;
+
+		if (result["isOk"])
+		{
+			this._hAuthTicket = result["authTicket"] as number;
+			this._ticketHexStr = result["ticketHexStr"] as string;
+
+			// Fire success trigger
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAuthTicketForWebApiSuccess);
+
+			// Return obtained ticket details for script API
+			return {
+				authTicket: this._hAuthTicket,
+				ticketHexStr: this._ticketHexStr
+			};
+		}
+		else
+		{
+			// Fire failure trigger
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAuthTicketForWebApiError);
+
+			// Reject returned promise
+			throw new Error("getAuthTicketForWebApi failed");
+		}
+	}
+
+	get authTicket()
+	{
+		return this._hAuthTicket;
+	}
+
+	get ticketHexStr()
+	{
+		return this._ticketHexStr;
+	}
+
+	cancelAuthTicket(authTicket: number)
+	{
+		if (!this._isAvailable)
+			return;
+
+		// If the last held auth ticket is cancelled, clear it.
+		if (authTicket === this._hAuthTicket)
+			this._hAuthTicket = 0;
+
+		this._sendWrapperExtensionMessage("cancel-auth-ticket", [authTicket]);
 	}
 };
 

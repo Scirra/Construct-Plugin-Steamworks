@@ -167,5 +167,35 @@
 			"expressionName": "TriggerAppID",
 			"returnType": "number"
 		}]
+	},
+	"authentication": {
+		"conditions": [{
+			"id": "on-get-auth-ticket-for-web-api-success",
+			"scriptName": "OnGetAuthTicketForWebApiSuccess",
+			"isTrigger": true
+		}, {
+			"id": "on-get-auth-ticket-for-web-api-error",
+			"scriptName": "OnGetAuthTicketForWebApiError",
+			"isTrigger": true
+		}],
+		"actions": [{
+			"id": "get-auth-ticket-for-web-api",
+			"scriptName": "GetAuthTicketForWebApi",
+			"isAsync": true,
+			"params": [{	"id": "identity",		"type": "string"	}]
+		}, {
+			"id": "cancel-auth-ticket",
+			"scriptName": "CancelAuthTicket",
+			"params": [{	"id": "auth-ticket",	"type": "number"	}]
+		}],
+		"expressions": [{
+			"id": "auth-ticket",
+			"expressionName": "AuthTicket",
+			"returnType": "number"
+		}, {
+			"id": "ticket-hex-str",
+			"expressionName": "TicketHexStr",
+			"returnType": "string"
+		}]
 	}
 }
