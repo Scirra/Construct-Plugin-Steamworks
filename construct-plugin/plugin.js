@@ -1,6 +1,4 @@
-
 const SDK = self.SDK;
-
 ////////////////////////////////////////////
 // The plugin ID is how Construct identifies different kinds of plugins.
 // *** NEVER CHANGE THE PLUGIN ID AFTER RELEASING A PLUGIN! ***
@@ -11,87 +9,58 @@ const SDK = self.SDK;
 // and create an entirely new plugin with a different plugin ID.
 const PLUGIN_ID = "Steamworks_Ext";
 ////////////////////////////////////////////
-
 const PLUGIN_CATEGORY = "platform-specific";
-
-const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends SDK.IPluginBase
-{
-	constructor()
-	{
-		super(PLUGIN_ID);
-		
-		SDK.Lang.PushContext("plugins." + PLUGIN_ID.toLowerCase());
-		
-		this._info.SetName(self.lang(".name"));
-		this._info.SetDescription(self.lang(".description"));
-		this._info.SetCategory(PLUGIN_CATEGORY);
-		this._info.SetAuthor("Scirra");
-		this._info.SetHelpUrl(self.lang(".help-url"));
-		this._info.SetIsSingleGlobal(true);
-		this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
-		
-		SDK.Lang.PushContext(".properties");
-		
-		this._info.SetProperties([
-			new SDK.PluginProperty("text", "app-id"),
-			new SDK.PluginProperty("check", "development-mode", true)
-		]);
-		
-		this._info.SetWrapperExportProperties("scirra-steam", ["app-id", "development-mode"]);
-		
-		SDK.Lang.PopContext();		// .properties
-		
-		SDK.Lang.PopContext();
-		
-		// Add necessary DLLs as wrapper extension dependencies.
-		this._info.AddFileDependency({
-			filename: "Steam_x86.ext.dll",
-			type: "wrapper-extension",
-			platform: "windows-x86"
-		});
-		
-		this._info.AddFileDependency({
-			filename: "steam_api.dll",
-			type: "wrapper-extension",
-			platform: "windows-x86"
-		});
-		
-		this._info.AddFileDependency({
-			filename: "Steam_x64.ext.dll",
-			type: "wrapper-extension",
-			platform: "windows-x64"
-		});
-		
-		this._info.AddFileDependency({
-			filename: "steam_api64.dll",
-			type: "wrapper-extension",
-			platform: "windows-x64"
-		});
-
-		this._info.AddFileDependency({
-			filename: "steamworks.ext.dylib",
-			type: "wrapper-extension",
-			platform: "macos-universal"
-		});
-
-		this._info.AddFileDependency({
-			filename: "libsteam_api.dylib",
-			type: "wrapper-extension",
-			platform: "macos-universal"
-		});
-
-		this._info.AddFileDependency({
-			filename: "steamworks-x64.ext.so",
-			type: "wrapper-extension",
-			platform: "linux-x64"
-		});
-
-		this._info.AddFileDependency({
-			filename: "libsteam_api.so",
-			type: "wrapper-extension",
-			platform: "linux-x64"
-		});
-	}
+const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends SDK.IPluginBase {
+    constructor() {
+        super(PLUGIN_ID);
+        SDK.Lang.PushContext("plugins." + PLUGIN_ID.toLowerCase());
+        this._info.SetName(self.lang(".name"));
+        this._info.SetDescription(self.lang(".description"));
+        this._info.SetCategory(PLUGIN_CATEGORY);
+        this._info.SetAuthor("Scirra");
+        this._info.SetHelpUrl(self.lang(".help-url"));
+        this._info.SetIsSingleGlobal(true);
+        this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
+        SDK.Lang.PushContext(".properties");
+        this._info.SetProperties([
+            new SDK.PluginProperty("text", "app-id"),
+            new SDK.PluginProperty("check", "development-mode", true)
+        ]);
+        this._info.SetWrapperExportProperties("scirra-steam", ["app-id", "development-mode"]);
+        SDK.Lang.PopContext(); // .properties
+        SDK.Lang.PopContext();
+        // Add necessary DLLs as wrapper extension dependencies.
+        this._info.AddFileDependency({
+            filename: "Steam_x64.ext.dll",
+            type: "wrapper-extension",
+            platform: "windows-x64"
+        });
+        this._info.AddFileDependency({
+            filename: "steam_api64.dll",
+            type: "wrapper-extension",
+            platform: "windows-x64"
+        });
+        this._info.AddFileDependency({
+            filename: "steamworks.ext.dylib",
+            type: "wrapper-extension",
+            platform: "macos-universal"
+        });
+        this._info.AddFileDependency({
+            filename: "libsteam_api.dylib",
+            type: "wrapper-extension",
+            platform: "macos-universal"
+        });
+        this._info.AddFileDependency({
+            filename: "steamworks-x64.ext.so",
+            type: "wrapper-extension",
+            platform: "linux-x64"
+        });
+        this._info.AddFileDependency({
+            filename: "libsteam_api.so",
+            type: "wrapper-extension",
+            platform: "linux-x64"
+        });
+    }
 };
-
 PLUGIN_CLASS.Register(PLUGIN_ID, PLUGIN_CLASS);
+export {};

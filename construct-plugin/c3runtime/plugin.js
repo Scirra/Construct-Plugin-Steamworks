@@ -1,10 +1,8 @@
-
 const C3 = globalThis.C3;
-
-C3.Plugins.Steamworks_Ext = class SteamworksExtPlugin extends globalThis.ISDKPluginBase
-{
-	constructor()
-	{
-		super();
-	}
+C3.Plugins.Steamworks_Ext = class SteamworksExtPlugin extends globalThis.ISDKPluginBase {
+    constructor() {
+        super();
+    }
 };
+// Necessary for TypeScript to treat this file as a module
+export {};
