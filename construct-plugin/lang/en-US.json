@@ -7,7 +7,7 @@
 		"plugins": {
 			"steamworks_ext": {
 				"name": "Steamworks",
-				"description": "Access Steam features in the Windows WebView2 and Linux CEF exporters.",
+				"description": "Access Steam features in the Windows, macOS and Linux exporters.",
 				"help-url": "https://www.construct.net/en/make-games/addons/1105/steamworks-webview2/documentation",
 				"properties": {
 					"app-id": {
