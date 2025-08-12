@@ -11,12 +11,11 @@
 		   be done by uncommenting the line below. */
 		//"noImplicitAny": false,
 
-		/* Set target to ES2021 so public class fields are removed from output, as Closure Compiler
-		   (used for minifying projects) doesn't support them yet. */
-		"target": "ES2021", 
+		/* Use a modern target to keep class fields in output */
+		"target": "es2024",
 
 		/* Use modern standard JavaScript (ES) Modules */
-		"module": "ES2022",
+		"module": "es2022",
 
 		/* Avoid removing unused imports, as it can break importsForEvents.js. */
 		"verbatimModuleSyntax": true,
