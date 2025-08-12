@@ -15,6 +15,16 @@ C3.Plugins.Steamworks_Ext.Exps =
 		return this.staticAccountKey;
 	},
 
+	AppOwnerAccountID(this: SDKInstanceClass)
+	{
+		return this.appOwnerAccountId;
+	},
+
+	AppOwnerStaticAccountKey(this: SDKInstanceClass)
+	{
+		return this.appOwnerStaticAccountKey;
+	},
+
 	PersonaName(this: SDKInstanceClass)
 	{
 		return this.personaName;

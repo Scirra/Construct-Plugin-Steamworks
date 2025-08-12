@@ -233,6 +233,14 @@
 						"description": "The current user's Steam static account key as a string.",
 						"translated-name": "StaticAccountKey"
 					},
+					"app-owner-account-id": {
+						"description": "The app owner's Steam account ID (for Family Sharing).",
+						"translated-name": "AppOwnerAccountID"
+					},
+					"app-owner-static-account-key": {
+						"description": "The app owner's Steam static account key as a string (for Family Sharing).",
+						"translated-name": "AppOwnerStaticAccountKey"
+					},
 					"persona-name": {
 						"description": "The current user's Steam persona (display) name.",
 						"translated-name": "PersonaName"

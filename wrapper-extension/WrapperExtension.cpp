@@ -309,6 +309,10 @@ void WrapperExtension::OnInitMessage(double asyncId)
 		// Get current steam user ID for accessing account IDs
 		CSteamID steamId = SteamUser()->GetSteamID();
 
+		// Get app owner ID as well, since it can be different from the current user if accessing the
+		// app via Family Sharing.
+		CSteamID appOwnerId = SteamApps()->GetAppOwner();
+
 		// Send init data back to JavaScript with key details from the API.
 		SendAsyncResponse({
 			{ "isAvailable",				true },
@@ -320,6 +324,10 @@ void WrapperExtension::OnInitMessage(double asyncId)
 			// number type (as a double has only 53 bits of integer precision), so convert it to a string.
 			{ "staticAccountKey",			std::to_string(steamId.GetStaticAccountKey()) },
 			{ "playerSteamLevel",			static_cast<double>(SteamUser()->GetPlayerSteamLevel()) },
+
+			// App owner account IDs, as per above
+			{ "appOwnerAccountId",			static_cast<double>(appOwnerId.GetAccountID()) },
+			{ "appOwnerStaticAccountKey",	std::to_string(appOwnerId.GetStaticAccountKey()) },
 
 			{ "appId",						static_cast<double>(SteamUtils()->GetAppID()) },
 			{ "steamUILanguage",			SteamUtils()->GetSteamUILanguage() },

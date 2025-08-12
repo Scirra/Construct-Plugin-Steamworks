@@ -9,6 +9,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         this._isRunningOnSteamDeck = false;
         this._accountId = 0;
         this._staticAccountKey = "";
+        this._appOwnerAccountId = 0;
+        this._appOwnerStaticAccountKey = "";
         this._personaName = "";
         this._playerSteamLevel = 0;
         this._appId = 0;
@@ -58,6 +60,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             this._personaName = result["personaName"];
             this._accountId = result["accountId"];
             this._staticAccountKey = result["staticAccountKey"];
+            this._appOwnerAccountId = result["appOwnerAccountId"];
+            this._appOwnerStaticAccountKey = result["appOwnerStaticAccountKey"];
             this._playerSteamLevel = result["playerSteamLevel"];
             this._appId = result["appId"];
             this._steamUILanguage = result["steamUILanguage"];
@@ -132,6 +136,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     }
     get staticAccountKey() {
         return this._staticAccountKey;
+    }
+    get appOwnerAccountId() {
+        return this._appOwnerAccountId;
+    }
+    get appOwnerStaticAccountKey() {
+        return this._appOwnerStaticAccountKey;
     }
     get playerSteamLevel() {
         return this._playerSteamLevel;

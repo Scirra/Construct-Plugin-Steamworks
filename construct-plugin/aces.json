@@ -53,6 +53,14 @@
 				"expressionName": "StaticAccountKey",
 				"returnType": "string"
 			}, {
+				"id": "app-owner-account-id",
+				"expressionName": "AppOwnerAccountID",
+				"returnType": "number"
+			}, {
+				"id": "app-owner-static-account-key",
+				"expressionName": "AppOwnerStaticAccountKey",
+				"returnType": "string"
+			}, {
 				"id": "persona-name",
 				"expressionName": "PersonaName",
 				"returnType": "string"
