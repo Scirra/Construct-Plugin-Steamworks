@@ -23,7 +23,8 @@
 					"steamworks": "Steamworks",
 					"stats-achievements": "Stats / Achievements", 
 					"dlc": "DLC",
-					"authentication": "Authentication"
+					"authentication": "Authentication",
+					"rich-presence": "Rich presence"
 				},
 				"conditions": {
 					"is-available": {
@@ -222,6 +223,26 @@
 								"desc": "The authentication ticket to cancel."
 							}
 						}
+					},
+					"set-rich-presence": {
+						"list-name": "Set rich presence",
+						"display-text": "Set rich presence key [b]{0}[/i] value [i]{1}[/i]",
+						"description": "Set a Rich Presence key/value for the current user that is automatically shared to all friends playing the same game.",
+						"params": {
+							"key": {
+								"name": "Key",
+								"desc": "The rich presence key to set, e.g. \"status\"."
+							},
+							"value": {
+								"name": "Value",
+								"desc": "A string to associate with the key. Use an empty string to remove the key."
+							}
+						}
+					},
+					"clear-rich-presence": {
+						"list-name": "Clear rich presence",
+						"display-text": "Clear rich presence",
+						"description": "Clears all of the current user's rich presence keys and values."
 					}
 				},
 				"expressions": {

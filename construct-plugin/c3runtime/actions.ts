@@ -54,5 +54,15 @@ C3.Plugins.Steamworks_Ext.Acts =
 	CancelAuthTicket(this: SDKInstanceClass, authTicket: number)
 	{
 		this.cancelAuthTicket(authTicket);
+	},
+
+	SetRichPresence(this: SDKInstanceClass, key: string, value: string)
+	{
+		this.setRichPresence(key, value);
+	},
+
+	ClearRichPresence(this: SDKInstanceClass)
+	{
+		this.clearRichPresence();
 	}
 };

@@ -32,6 +32,12 @@ C3.Plugins.Steamworks_Ext.Acts =
         },
         CancelAuthTicket(authTicket) {
             this.cancelAuthTicket(authTicket);
+        },
+        SetRichPresence(key, value) {
+            this.setRichPresence(key, value);
+        },
+        ClearRichPresence() {
+            this.clearRichPresence();
         }
     };
 export {};

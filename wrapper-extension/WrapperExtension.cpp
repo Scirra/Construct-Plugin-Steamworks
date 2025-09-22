@@ -293,6 +293,17 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 
 		OnCancelAuthTicket(hAuthTicket);
 	}
+	else if (messageId == "set-rich-presence")
+	{
+		const std::string& key = params[0].GetString();
+		const std::string& value = params[1].GetString();
+
+		OnSetRichPresence(key, value);
+	}
+	else if (messageId == "clear-rich-presence")
+	{
+		OnClearRichPresence();
+	}
 }
 
 void WrapperExtension::OnInitMessage(double asyncId)
@@ -510,4 +521,19 @@ void WrapperExtension::OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t
 void WrapperExtension::OnCancelAuthTicket(HAuthTicket hAuthTicket)
 {
 	SteamUser()->CancelAuthTicket(hAuthTicket);
+}
+
+void WrapperExtension::OnSetRichPresence(const std::string& key, const std::string& value)
+{
+	// Note the value may be an empty string to remove the key. Returns a boolean which is true if successful.
+	bool result = SteamFriends()->SetRichPresence(key.c_str(), value.c_str());
+
+	// If failed just log a diagnostic
+	if (!result)
+		LogMessage("SetRichPresence() failed");
+}
+
+void WrapperExtension::OnClearRichPresence()
+{
+	SteamFriends()->ClearRichPresence();
 }

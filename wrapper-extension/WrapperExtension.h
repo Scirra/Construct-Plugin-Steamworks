@@ -38,6 +38,8 @@ public:
 	void OnUninstallDLCMessage(AppId_t appId);
 	void OnGetAuthTicketForWebApi(const std::string& identity, double asyncId);
 	void OnCancelAuthTicket(HAuthTicket hAuthTicket);
+	void OnSetRichPresence(const std::string& key, const std::string& value);
+	void OnClearRichPresence();
 
 	// Steam events (called via SteamCallbacks class)
 	void OnGameOverlayActivated(bool isShowing);

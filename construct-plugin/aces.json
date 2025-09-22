@@ -205,5 +205,16 @@
 			"expressionName": "TicketHexStr",
 			"returnType": "string"
 		}]
+	},
+	"rich-presence": {
+		"actions": [{
+			"id": "set-rich-presence",
+			"scriptName": "SetRichPresence",
+			"params": [{	"id": "key",		"type": "string"	},
+					   {	"id": "value",		"type": "string"	}]
+		}, {
+			"id": "clear-rich-presence",
+			"scriptName": "ClearRichPresence"
+		}]
 	}
 }

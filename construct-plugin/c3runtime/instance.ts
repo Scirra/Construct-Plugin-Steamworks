@@ -410,6 +410,22 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		this._sendWrapperExtensionMessage("cancel-auth-ticket", [authTicket]);
 	}
+
+	setRichPresence(key: string, value: string)
+	{
+		if (!this.#isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("set-rich-presence", [key, value]);
+	}
+
+	clearRichPresence()
+	{
+		if (!this.#isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("clear-rich-presence");
+	}
 };
 
 C3.Plugins.Steamworks_Ext.Instance = Steamworks_ExtInstance;
