@@ -226,7 +226,7 @@
 					},
 					"set-rich-presence": {
 						"list-name": "Set rich presence",
-						"display-text": "Set rich presence key [b]{0}[/i] value [i]{1}[/i]",
+						"display-text": "Set rich presence key [b]{0}[/b] value [i]{1}[/i]",
 						"description": "Set a Rich Presence key/value for the current user that is automatically shared to all friends playing the same game.",
 						"params": {
 							"key": {
