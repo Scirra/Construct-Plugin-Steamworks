@@ -331,13 +331,18 @@ void WrapperExtension::OnInitMessage(double asyncId)
 
 			{ "personaName",				SteamFriends()->GetPersonaName() },
 			{ "accountId",					static_cast<double>(steamId.GetAccountID()) },
-			// Note the static account key is a uint64 which isn't guaranteed to fit in JavaScript's
-			// number type (as a double has only 53 bits of integer precision), so convert it to a string.
+
+			// Note the 64-bit account ID and static account key are uint64s which aren't guaranteed
+			// to fit in JavaScript's number type (as a double has only 53 bits of integer precision).
+			// So convert these to strings for passing to JavaScript.
+			{ "accountId64Bit",				std::to_string(steamId.ConvertToUint64()) },
 			{ "staticAccountKey",			std::to_string(steamId.GetStaticAccountKey()) },
+
 			{ "playerSteamLevel",			static_cast<double>(SteamUser()->GetPlayerSteamLevel()) },
 
 			// App owner account IDs, as per above
 			{ "appOwnerAccountId",			static_cast<double>(appOwnerId.GetAccountID()) },
+			{ "appOwnerAccountId64Bit",		std::to_string(appOwnerId.ConvertToUint64()) },
 			{ "appOwnerStaticAccountKey",	std::to_string(appOwnerId.GetStaticAccountKey()) },
 
 			{ "appId",						static_cast<double>(SteamUtils()->GetAppID()) },

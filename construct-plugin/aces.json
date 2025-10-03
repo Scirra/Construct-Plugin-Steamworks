@@ -53,9 +53,17 @@
 				"expressionName": "StaticAccountKey",
 				"returnType": "string"
 			}, {
+				"id": "account-id-64-bit",
+				"expressionName": "AccountID64Bit",
+				"returnType": "string"
+			}, {
 				"id": "app-owner-account-id",
 				"expressionName": "AppOwnerAccountID",
 				"returnType": "number"
+			}, {
+				"id": "app-owner-account-id-64-bit",
+				"expressionName": "AppOwnerAccountID64Bit",
+				"returnType": "string"
 			}, {
 				"id": "app-owner-static-account-key",
 				"expressionName": "AppOwnerStaticAccountKey",

@@ -9,8 +9,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	#isAvailable = false;
 	#isRunningOnSteamDeck = false;
 	#accountId = 0;
+	#accountId64Bit = "";
 	#staticAccountKey = "";
 	#appOwnerAccountId = 0;
+	#appOwnerAccountId64Bit = "";
 	#appOwnerStaticAccountKey = "";
 	#personaName = "";
 	#playerSteamLevel = 0;
@@ -83,8 +85,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this.#isRunningOnSteamDeck = !!result["isRunningOnSteamDeck"];
 			this.#personaName = result["personaName"] as string;
 			this.#accountId = result["accountId"] as number;
+			this.#accountId64Bit = result["accountId64Bit"] as string;
 			this.#staticAccountKey = result["staticAccountKey"] as string;
 			this.#appOwnerAccountId = result["appOwnerAccountId"] as number;
+			this.#appOwnerAccountId64Bit = result["appOwnerAccountId64Bit"] as string;
 			this.#appOwnerStaticAccountKey = result["appOwnerStaticAccountKey"] as string;
 			this.#playerSteamLevel = result["playerSteamLevel"] as number;
 			this.#appId = result["appId"] as number;
@@ -193,6 +197,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		return this.#accountId;
 	}
 
+	get accountId64Bit()
+	{
+		return this.#accountId64Bit;
+	}
+
 	get staticAccountKey()
 	{
 		return this.#staticAccountKey;
@@ -201,6 +210,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	get appOwnerAccountId()
 	{
 		return this.#appOwnerAccountId;
+	}
+
+	get appOwnerAccountId64Bit()
+	{
+		return this.#appOwnerAccountId64Bit;
 	}
 
 	get appOwnerStaticAccountKey()
