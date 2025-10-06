@@ -247,24 +247,24 @@
 				},
 				"expressions": {
 					"account-id": {
-						"description": "The current user's Steam account ID (32-bit representation).",
+						"description": "The current user's Steam account ID.",
 						"translated-name": "AccountID"
 					},
-					"account-id-64-bit": {
-						"description": "The current user's Steam account ID (64-bit representation, as a string).",
-						"translated-name": "AccountID64Bit"
+					"steam-id-64-bit": {
+						"description": "The current user's Steam ID (64-bit representation, as a string).",
+						"translated-name": "SteamID64Bit"
 					},
 					"static-account-key": {
-						"description": "The current user's Steam static account key as a string.",
+						"description": "The current user's Steam static account key (as a string).",
 						"translated-name": "StaticAccountKey"
 					},
 					"app-owner-account-id": {
-						"description": "The app owner's Steam account ID (for Family Sharing, 32-bit representation).",
+						"description": "The app owner's Steam account ID (for Family Sharing).",
 						"translated-name": "AppOwnerAccountID"
 					},
-					"app-owner-account-id-64-bit": {
-						"description": "The app owner's Steam account ID (for Family Sharing, 64-bit representation, as a string).",
-						"translated-name": "AppOwnerAccountID64Bit"
+					"app-owner-steam-id-64-bit": {
+						"description": "The app owner's Steam ID (for Family Sharing, 64-bit representation, as a string).",
+						"translated-name": "AppOwnerSteamID64Bit"
 					},
 					"app-owner-static-account-key": {
 						"description": "The app owner's Steam static account key as a string (for Family Sharing).",

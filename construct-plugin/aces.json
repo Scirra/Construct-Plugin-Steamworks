@@ -53,16 +53,16 @@
 				"expressionName": "StaticAccountKey",
 				"returnType": "string"
 			}, {
-				"id": "account-id-64-bit",
-				"expressionName": "AccountID64Bit",
+				"id": "steam-id-64-bit",
+				"expressionName": "SteamID64Bit",
 				"returnType": "string"
 			}, {
 				"id": "app-owner-account-id",
 				"expressionName": "AppOwnerAccountID",
 				"returnType": "number"
 			}, {
-				"id": "app-owner-account-id-64-bit",
-				"expressionName": "AppOwnerAccountID64Bit",
+				"id": "app-owner-steam-id-64-bit",
+				"expressionName": "AppOwnerSteamID64Bit",
 				"returnType": "string"
 			}, {
 				"id": "app-owner-static-account-key",

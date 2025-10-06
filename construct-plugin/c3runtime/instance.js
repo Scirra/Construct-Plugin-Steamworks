@@ -5,10 +5,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     #isAvailable = false;
     #isRunningOnSteamDeck = false;
     #accountId = 0;
-    #accountId64Bit = "";
+    #steamId64Bit = "";
     #staticAccountKey = "";
     #appOwnerAccountId = 0;
-    #appOwnerAccountId64Bit = "";
+    #appOwnerSteamId64Bit = "";
     #appOwnerStaticAccountKey = "";
     #personaName = "";
     #playerSteamLevel = 0;
@@ -63,10 +63,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             this.#isRunningOnSteamDeck = !!result["isRunningOnSteamDeck"];
             this.#personaName = result["personaName"];
             this.#accountId = result["accountId"];
-            this.#accountId64Bit = result["accountId64Bit"];
+            this.#steamId64Bit = result["steamId64Bit"];
             this.#staticAccountKey = result["staticAccountKey"];
             this.#appOwnerAccountId = result["appOwnerAccountId"];
-            this.#appOwnerAccountId64Bit = result["appOwnerAccountId64Bit"];
+            this.#appOwnerSteamId64Bit = result["appOwnerSteamId64Bit"];
             this.#appOwnerStaticAccountKey = result["appOwnerStaticAccountKey"];
             this.#playerSteamLevel = result["playerSteamLevel"];
             this.#appId = result["appId"];
@@ -140,8 +140,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     get accountId() {
         return this.#accountId;
     }
-    get accountId64Bit() {
-        return this.#accountId64Bit;
+    get steamId64Bit() {
+        return this.#steamId64Bit;
     }
     get staticAccountKey() {
         return this.#staticAccountKey;
@@ -149,8 +149,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     get appOwnerAccountId() {
         return this.#appOwnerAccountId;
     }
-    get appOwnerAccountId64Bit() {
-        return this.#appOwnerAccountId64Bit;
+    get appOwnerSteamId64Bit() {
+        return this.#appOwnerSteamId64Bit;
     }
     get appOwnerStaticAccountKey() {
         return this.#appOwnerStaticAccountKey;
