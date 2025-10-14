@@ -3,6 +3,7 @@ const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "o
 class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     // Steam properties
     #isAvailable = false;
+    #isOverlayEnabled = true;
     #isRunningOnSteamDeck = false;
     #accountId = 0;
     #steamId64Bit = "";
@@ -32,7 +33,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         // Note the properties for App ID and development mode are not read here - instead they are exported
         // to the package.json file with the call to SetWrapperExportProperties(). The wrapper extension
         // then reads these values and sends the app ID when responding to the "init" message.
-        //const properties = this._getInitProperties();
+        const properties = this._getInitProperties();
+        this.#isOverlayEnabled = properties[2];
         // Listen for overlay shown/hidden events from the extension.
         // NOTE: this is implemented but currently non-functional as the Steam overlay currently will always use
         // its fallback mode, which does not fire overlay events.
@@ -47,7 +49,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             // once the loading screen finishes. In order to allow Steam to continue running callbacks while
             // the loading screen is showing (necessary for features like the overlay), set a timer to
             // run callbacks every 20ms until the first tick, which clears the timer.
-            this.#loadingTimerId = globalThis.setInterval(() => this.#runCallbacks(), 20);
+            this.#loadingTimerId = globalThis.setInterval(() => this.#tick(), 20);
             this._setTicking(true);
         }
     }
@@ -73,6 +75,18 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             this.#steamUILanguage = result["steamUILanguage"];
             this.#currentGameLanguage = result["currentGameLanguage"];
             this._availableGameLanguages = result["availableGameLanguages"];
+            // If the overlay is enabled, also activate the D3D11 overlay extension (if available).
+            // Note this is only supported with r457+, as it requires the host input processing change
+            // for Windows WebView2 in r450, but constructVersionCode was only added in r457, so this
+            // check will only actually verify it is r457+.
+            if (this.#isOverlayEnabled) {
+                if (this.runtime.sdk.constructVersionCode >= 45700) {
+                    this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "create-overlay", ["always-showing-transparent"]);
+                }
+                else {
+                    console.warn("[Steamworks] The chosen overlay mode will not take effect as it requires r457+.");
+                }
+            }
         }
     }
     _release() {
@@ -84,10 +98,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             globalThis.clearInterval(this.#loadingTimerId);
             this.#loadingTimerId = -1;
         }
-        this.#runCallbacks();
+        this.#tick();
     }
-    #runCallbacks() {
-        // Tell extension to call SteamAPI_RunCallbacks().
+    #tick() {
+        // Tell the D3D11 overlay extension to tick
+        this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "tick");
+        // Tell Steam extension to call SteamAPI_RunCallbacks().
         this._sendWrapperExtensionMessage("run-callbacks");
     }
     // NOTE: implemented but currently non-functional
@@ -102,6 +118,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayShown);
         else
             this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayHidden);
+        // Tell the D3D11 overlay extension about the change in overlay state
+        this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
     }
     #onDlcInstalled(e) {
         this._triggerAppId = e["appId"];
