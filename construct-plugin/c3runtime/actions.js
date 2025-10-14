@@ -38,6 +38,9 @@ C3.Plugins.Steamworks_Ext.Acts =
         },
         ClearRichPresence() {
             this.clearRichPresence();
+        },
+        TriggerScreenshot() {
+            this.triggerScreenshot();
         }
     };
 export {};

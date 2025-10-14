@@ -20,3 +20,5 @@ std::string JoinStrings(const std::vector<std::string>& vec, const std::string& 
 void TrimString(std::string& str);
 
 std::string BytesToHexString(const std::vector<uint8_t>& bytes);
+
+std::string base64_decode(const std::string& encoded_string);

@@ -247,6 +247,11 @@
 						"list-name": "Clear rich presence",
 						"display-text": "Clear rich presence",
 						"description": "Clears all of the current user's rich presence keys and values."
+					},
+					"trigger-screenshot": {
+						"list-name": "Trigger screenshot",
+						"display-text": "Trigger screenshot",
+						"description": "Activate the Steam feature to take a screenshot. Requires the overlay to be active."
 					}
 				},
 				"expressions": {

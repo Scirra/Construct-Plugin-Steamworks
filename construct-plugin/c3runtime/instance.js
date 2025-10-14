@@ -1,4 +1,13 @@
 const C3 = globalThis.C3;
+// Helper function for screenshots
+function ArrayBufferToBase64(arrayBuffer) {
+    let binaryStr = '';
+    const uint8arr = new Uint8Array(arrayBuffer);
+    for (let i = 0, len = uint8arr.byteLength; i < len; ++i) {
+        binaryStr += String.fromCharCode(uint8arr[i]);
+    }
+    return self.btoa(binaryStr);
+}
 const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"];
 class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     // Steam properties
@@ -35,11 +44,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         // then reads these values and sends the app ID when responding to the "init" message.
         const properties = this._getInitProperties();
         this.#isOverlayEnabled = properties[2];
-        // Listen for overlay shown/hidden events from the extension.
-        // NOTE: this is implemented but currently non-functional as the Steam overlay currently will always use
-        // its fallback mode, which does not fire overlay events.
-        this._addWrapperExtensionMessageHandler("on-game-overlay-activated", e => this.#onGameOverlayActivated(e));
-        this._addWrapperExtensionMessageHandler("on-dlc-installed", e => this.#onDlcInstalled(e));
+        // Listen for events from wrapper extension.
+        this._addWrapperMessageHandlers([
+            ["on-game-overlay-activated", e => this.#onGameOverlayActivated(e)],
+            ["on-dlc-installed", e => this.#onDlcInstalled(e)],
+            ["screenshot-requested", () => this.#onScreenshotRequested()]
+        ]);
         // Corresponding wrapper extension is available
         if (this._isWrapperExtensionAvailable()) {
             // Run async init during loading.
@@ -125,6 +135,34 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         this._triggerAppId = e["appId"];
         this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnDLCInstalled);
         this._triggerAppId = 0;
+    }
+    async #onScreenshotRequested() {
+        // Request the runtime save the canvas to an image
+        const blob = await this.runtime.saveCanvasImage();
+        // Decode the image to an ImageBitmap
+        const imageBitmap = await createImageBitmap(blob);
+        const width = imageBitmap.width;
+        const height = imageBitmap.height;
+        // Create a canvas and extract ImageData from it. Use an OffscreenCanvas
+        // as this may be running in a worker.
+        const canvas = new OffscreenCanvas(width, height);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imageBitmap, 0, 0, width, height);
+        const imageData = ctx.getImageData(0, 0, width, height);
+        // The returned image data is in RGBA format, whereas Steam wants data in RGB format.
+        // Create a Uint8Array with just RGB data, leaving out the alpha channel.
+        const rgbaData = imageData.data;
+        const rgbData = new Uint8Array(3 * width * height);
+        for (let i = 0, len = rgbaData.length / 4; i < len; ++i) {
+            const src = i * 4;
+            const dest = i * 3;
+            rgbData[dest + 0] = rgbaData[src + 0];
+            rgbData[dest + 1] = rgbaData[src + 1];
+            rgbData[dest + 2] = rgbaData[src + 2];
+        }
+        // Convert RGB data to base64 and send to wrapper extension
+        const dataBase64 = ArrayBufferToBase64(rgbData.buffer);
+        this._sendWrapperExtensionMessage("screenshot-data", [dataBase64, width, height]);
     }
     _showOverlay(option) {
         if (!this.#isAvailable)
@@ -317,6 +355,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         if (!this.#isAvailable)
             return;
         this._sendWrapperExtensionMessage("clear-rich-presence");
+    }
+    triggerScreenshot() {
+        if (!this.#isAvailable)
+            return;
+        this._sendWrapperExtensionMessage("trigger-screenshot");
     }
 }
 ;

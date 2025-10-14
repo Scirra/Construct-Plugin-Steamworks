@@ -304,6 +304,18 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 	{
 		OnClearRichPresence();
 	}
+	else if (messageId == "trigger-screenshot")
+	{
+		OnTriggerScreenshot();
+	}
+	else if (messageId == "screenshot-data")
+	{
+		const std::string& base64data = params[0].GetString();
+		int width = static_cast<int>(params[1].GetNumber());
+		int height = static_cast<int>(params[2].GetNumber());
+
+		OnScreenshotData(base64data, width, height);
+	}
 }
 
 void WrapperExtension::OnInitMessage(double asyncId)
@@ -316,6 +328,13 @@ void WrapperExtension::OnInitMessage(double asyncId)
 		// Note the Steamworks SDK documentation states that Steam should be initialized before creating
 		// objects that listen for callbacks, which SteamCallbacks does, hence it being a separate class.
 		steamCallbacks.reset(new SteamCallbacks(*this));
+
+		// When the overlay workaround is in use, it will create a separate surface for the overlay
+		// to render in to. This surface is the one captured by default for screenshots but it doesn't
+		// have any interesting content in it. To work around this, hook the Steam screenshot event and
+		// pass it to the Construct runtime to take a screenshot of the actual game content and return
+		// it to the wrapper extension here.
+		SteamScreenshots()->HookScreenshots(true);		// enables ScreenshotRequested_t events
 
 		// Get current steam user ID for accessing account IDs
 		CSteamID steamId = SteamUser()->GetSteamID();
@@ -349,7 +368,7 @@ void WrapperExtension::OnInitMessage(double asyncId)
 			{ "steamUILanguage",			SteamUtils()->GetSteamUILanguage() },
 			{ "currentGameLanguage",		SteamApps()->GetCurrentGameLanguage() },
 			{ "availableGameLanguages",		SteamApps()->GetAvailableGameLanguages() }
-			}, asyncId);
+		}, asyncId);
 	}
 	else
 	{
@@ -541,4 +560,25 @@ void WrapperExtension::OnSetRichPresence(const std::string& key, const std::stri
 void WrapperExtension::OnClearRichPresence()
 {
 	SteamFriends()->ClearRichPresence();
+}
+
+void WrapperExtension::OnTriggerScreenshot()
+{
+	SteamScreenshots()->TriggerScreenshot();
+}
+
+void WrapperExtension::OnScreenshotRequested()
+{
+	// Construct runtime will take screenshot and send data back via the "screenshot-data"
+	// message, which is handled by OnScreenshotData().
+	SendWebMessage("screenshot-requested", {});
+}
+
+void WrapperExtension::OnScreenshotData(const std::string& base64data, int width, int height)
+{
+	// Decode the base64 screenshot data and then call WriteScreenshot() to write this data as
+	// a screenshot in Steam
+	std::string decodedData = base64_decode(base64data);
+
+	SteamScreenshots()->WriteScreenshot(const_cast<char*>(decodedData.data()), static_cast<uint32>(decodedData.size()), width, height);
 }

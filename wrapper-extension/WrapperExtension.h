@@ -40,6 +40,8 @@ public:
 	void OnCancelAuthTicket(HAuthTicket hAuthTicket);
 	void OnSetRichPresence(const std::string& key, const std::string& value);
 	void OnClearRichPresence();
+	void OnTriggerScreenshot();
+	void OnScreenshotData(const std::string& base64data, int width, int height);
 
 	// Steam events (called via SteamCallbacks class)
 	void OnGameOverlayActivated(bool isShowing);
@@ -47,6 +49,7 @@ public:
 	void OnUserStatsStored(EResult eResult);
 	void OnDLCInstalledCallback(AppId_t appId);
 	void OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t* pCallback);
+	void OnScreenshotRequested();
 
 protected:
 	IApplication* iApplication;

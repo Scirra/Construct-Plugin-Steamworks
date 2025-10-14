@@ -64,5 +64,10 @@ C3.Plugins.Steamworks_Ext.Acts =
 	ClearRichPresence(this: SDKInstanceClass)
 	{
 		this.clearRichPresence();
+	},
+
+	TriggerScreenshot(this: SDKInstanceClass)
+	{
+		this.triggerScreenshot();
 	}
 };

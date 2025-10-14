@@ -35,3 +35,8 @@ void SteamCallbacks::GetTicketForWebApiResponse(GetTicketForWebApiResponse_t* pC
 {
 	extension.OnGetTicketForWebApiResponse(pCallback);
 }
+
+void SteamCallbacks::OnScreenshotRequested(ScreenshotRequested_t* pCallback)
+{
+	extension.OnScreenshotRequested();
+}

@@ -41,6 +41,9 @@
 					"id": "modal",
 					"type": "boolean"
 				}]
+			}, {
+				"id": "trigger-screenshot",
+				"scriptName": "TriggerScreenshot"
 			}
 		],
 		"expressions": [
