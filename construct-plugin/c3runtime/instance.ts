@@ -235,6 +235,14 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		
 		this._sendWrapperExtensionMessage("show-overlay-url", [url, modal]);
 	}
+
+	_showOverlayInviteDialog(lobbyId: string)
+	{
+		if (!this.#isAvailable)
+			return;
+
+		this._sendWrapperExtensionMessage("show-overlay-invite-dialog", [lobbyId]);
+	}
 	
 	_saveToJson()
 	{
@@ -334,6 +342,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	showOverlayURL(url: string, modal: boolean)
 	{
 		this._showOverlayURL(url, modal);
+	}
+
+	showOverlayInviteDialog(lobbyId: string)
+	{
+		this._showOverlayInviteDialog(lobbyId);
 	}
 
 	async unlockAchievement(achievement: string)

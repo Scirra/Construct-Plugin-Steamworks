@@ -174,6 +174,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             return;
         this._sendWrapperExtensionMessage("show-overlay-url", [url, modal]);
     }
+    _showOverlayInviteDialog(lobbyId) {
+        if (!this.#isAvailable)
+            return;
+        this._sendWrapperExtensionMessage("show-overlay-invite-dialog", [lobbyId]);
+    }
     _saveToJson() {
         return {
         // data to be saved for savegames
@@ -236,6 +241,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     }
     showOverlayURL(url, modal) {
         this._showOverlayURL(url, modal);
+    }
+    showOverlayInviteDialog(lobbyId) {
+        this._showOverlayInviteDialog(lobbyId);
     }
     async unlockAchievement(achievement) {
         if (!this.#isAvailable)

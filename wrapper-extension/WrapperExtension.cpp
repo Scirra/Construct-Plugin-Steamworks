@@ -251,6 +251,12 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 
 		OnShowOverlayURLMessage(url, isModal);
 	}
+	else if (messageId == "show-overlay-invite-dialog")
+	{
+		const std::string& steamIdLobbyStr = params[0].GetString();
+
+		OnShowOverlayInviteDialog(steamIdLobbyStr);
+	}
 	else if (messageId == "set-achievement")
 	{
 		const std::string& name = params[0].GetString();
@@ -399,6 +405,14 @@ void WrapperExtension::OnShowOverlayURLMessage(const std::string& url, bool isMo
 {
 	SteamFriends()->ActivateGameOverlayToWebPage(url.c_str(),
 		isModal ? k_EActivateGameOverlayToWebPageMode_Modal : k_EActivateGameOverlayToWebPageMode_Default);
+}
+
+void WrapperExtension::OnShowOverlayInviteDialog(const std::string& steamIdLobbyStr)
+{
+	// Convert string to uint64, then that to a CSteamID
+	CSteamID steamId(std::stoull(steamIdLobbyStr));
+
+	SteamFriends()->ActivateGameOverlayInviteDialog(steamId);
 }
 
 void WrapperExtension::OnSetAchievementMessage(const std::string& name, double asyncId)

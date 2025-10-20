@@ -151,6 +151,17 @@
 							}
 						}
 					},
+					"show-overlay-invite-dialog": {
+						"list-name": "Show overlay invite dialog",
+						"display-text": "Show overlay invite dialog for [b]{0}[/b]",
+						"description": "Show the Steam game overlay to open the invite dialog.",
+						"params": {
+							"lobby-id": {
+								"name": "Lobby ID",
+								"desc": "The Steam ID of the lobby that selected users will be invited to, as a string of the 64-bit representation."
+							}
+						}
+					},
 					"unlock-achievement": {
 						"list-name": "Unlock achievement",
 						"display-text": "Unlock achievement [b]{0}[/b]",

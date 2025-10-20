@@ -7,6 +7,9 @@ C3.Plugins.Steamworks_Ext.Acts =
         ShowOverlayURL(url, modal) {
             this._showOverlayURL(url, modal);
         },
+        ShowOverlayInviteDialog(lobbyId) {
+            this._showOverlayInviteDialog(lobbyId);
+        },
         async UnlockAchievement(achievement) {
             await this.unlockAchievement(achievement);
         },

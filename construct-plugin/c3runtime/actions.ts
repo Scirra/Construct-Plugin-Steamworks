@@ -15,6 +15,11 @@ C3.Plugins.Steamworks_Ext.Acts =
 		this._showOverlayURL(url, modal);
 	},
 
+	ShowOverlayInviteDialog(this: SDKInstanceClass, lobbyId: string)
+	{
+		this._showOverlayInviteDialog(lobbyId);
+	},
+
 	async UnlockAchievement(this: SDKInstanceClass, achievement: string)
 	{
 		await this.unlockAchievement(achievement);

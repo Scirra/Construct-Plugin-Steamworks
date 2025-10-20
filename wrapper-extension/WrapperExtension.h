@@ -31,6 +31,7 @@ public:
 	void OnInitMessage(double asyncId);
 	void OnShowOverlayMessage(size_t option);
 	void OnShowOverlayURLMessage(const std::string& url, bool isModal);
+	void OnShowOverlayInviteDialog(const std::string& steamIdLobbyStr);
 	void OnSetAchievementMessage(const std::string& name, double asyncId);
 	void OnClearAchievementMessage(const std::string& name, double asyncId);
 	void OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId);
