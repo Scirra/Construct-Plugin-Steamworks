@@ -20,9 +20,6 @@
 		/* Avoid removing unused imports, as it can break importsForEvents.js. */
 		"verbatimModuleSyntax": true,
 
-		/* Disable polyfill code for CommonJS modules - Construct always uses ES Modules */
-		"esModuleInterop": false,
-
 		/* Other standard settings specified by tsc --init */
 		"forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
 		"strict": true,                                      /* Enable all strict type-checking options. */
