@@ -83,6 +83,43 @@
 							}
 						}
 					},
+					"on-any-get-achievement-info-success": {
+						"list-name": "On any get achievement info success",
+						"display-text": "On any get achievement info success",
+						"description": "Triggered after any successful 'Get achievement info' action."
+					},
+					"on-get-achievement-info-success": {
+						"list-name": "On get achievement info success",
+						"display-text": "On get achievement [i]{0}[/i] info success",
+						"description": "Triggered after a successful 'Get achievement info' action.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"on-any-get-achievement-info-error": {
+						"list-name": "On any get achievement info error",
+						"display-text": "On any get achievement info error",
+						"description": "Triggered after any 'Get achievement info' action fails."
+					},
+					"on-get-achievement-info-error": {
+						"list-name": "On achievement unlock error",
+						"display-text": "On achievement [i]{0}[/i] unlock error",
+						"description": "Triggered after an 'Unlock achievement' action failed.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"achievement-is-achieved": {
+						"list-name": "Achievement is achieved",
+						"display-text": "Achievement is achieved",
+						"description": "In a 'Get achievement info' trigger, whether the associated achievement has already been achieved."
+					},
 					"on-dlc-installed-check-complete": {
 						"list-name": "On DLC installed check complete",
 						"display-text": "On DLC installed check complete",
@@ -177,6 +214,17 @@
 						"list-name": "Clear achievement",
 						"display-text": "Clear achievement [b]{0}[/b]",
 						"description": "Reset the unlock status of an achievement. Typically only used for testing purposes.",
+						"params": {
+							"achievement": {
+								"name": "Achievement",
+								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"get-achievement-info": {
+						"list-name": "Get achievement info",
+						"display-text": "Get achievement [b]{0}[/b] info",
+						"description": "Get an achievement's achieved state and unlock time. Fires a trigger when the result is available.",
 						"params": {
 							"achievement": {
 								"name": "Achievement",
@@ -317,6 +365,10 @@
 					"achievement": {
 						"description": "In an achievement trigger, the 'API Name' of the achievement.",
 						"translated-name": "Achievement"
+					},
+					"achievement-unlock-time": {
+						"description": "In a 'Get achievement info' trigger, the unlock time of the achievement, in milliseconds since 1st Jan 1970.",
+						"translated-name": "AchievementUnlockTime"
 					},
 					"trigger-app-id": {
 						"description": "The app ID for a trigger, e.g. 'On DLC installed'.",

@@ -29,6 +29,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     #dlcSet = new Set();
     // For running callbacks while loading
     #loadingTimerId = -1;
+    // Achievement state
+    #achievementIsAchieved = false;
+    #achievementUnlockTime = 0;
     // For triggers. Note as these are read externally they are left as public properties
     // but with an underscore to indicate internal use.
     _triggerAchievement = "";
@@ -179,6 +182,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             return;
         this._sendWrapperExtensionMessage("show-overlay-invite-dialog", [lobbyId]);
     }
+    _getAchievementIsAchieved() {
+        return this.#achievementIsAchieved;
+    }
+    _getAchievementUnlockTime() {
+        return this.#achievementUnlockTime;
+    }
     _saveToJson() {
         return {
         // data to be saved for savegames
@@ -278,6 +287,29 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
         }
         // Return result for script interface
         return isOk;
+    }
+    async getAchievementInfo(achievement) {
+        if (!this.#isAvailable)
+            throw new Error("not available");
+        const result = (await this._sendWrapperExtensionMessageAsync("get-achievement-info", [achievement]));
+        this._triggerAchievement = achievement;
+        const isOk = result["isOk"];
+        if (isOk) {
+            const isAchieved = result["isAchieved"];
+            const unlockTime = result["unlockTime"];
+            this.#achievementIsAchieved = isAchieved;
+            this.#achievementUnlockTime = unlockTime;
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetAchievementInfoSuccess);
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoSuccess);
+            // Return result for script interface
+            return { isAchieved, unlockTime };
+        }
+        else {
+            console.warn(`[Steamworks-Ext] Failed to get achievement '${achievement}' info`);
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetAchievementInfoError);
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoError);
+            return null; // return result for script interface
+        }
     }
     async checkDlcInstalled(appIds) {
         if (!this.#isAvailable)

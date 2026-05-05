@@ -45,6 +45,31 @@ C3.Plugins.Steamworks_Ext.Cnds =
 		return achievement.toLowerCase() === this._triggerAchievement.toLowerCase();
 	},
 
+	OnAnyGetAchievementInfoSuccess(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnGetAchievementInfoSuccess(this: SDKInstanceClass, achievement: string)
+	{
+		return achievement.toLowerCase() === this._triggerAchievement.toLowerCase();
+	},
+
+	OnAnyGetAchievementInfoError(this: SDKInstanceClass)
+	{
+		return true;
+	},
+	
+	OnGetAchievementInfoError(this: SDKInstanceClass, achievement: string)
+	{
+		return achievement.toLowerCase() === this._triggerAchievement.toLowerCase();
+	},
+
+	AchievementIsAchieved(this: SDKInstanceClass)
+	{
+		return this._getAchievementIsAchieved();
+	},
+
 	OnDLCInstalledCheckComplete(this: SDKInstanceClass)
 	{
 		return true;

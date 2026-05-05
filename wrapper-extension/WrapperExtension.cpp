@@ -269,6 +269,12 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 
 		OnClearAchievementMessage(name, asyncId);
 	}
+	else if (messageId == "get-achievement-info")
+	{
+		const std::string& name = params[0].GetString();
+
+		OnGetAchievementInfoMessage(name, asyncId);
+	}
 	else if (messageId == "is-dlc-installed")
 	{
 		const std::string& appIdStr = params[0].GetString();
@@ -456,6 +462,22 @@ void WrapperExtension::OnClearAchievementMessage(const std::string& name, double
 
 	SendAsyncResponse({
 		{ "isOk", false }
+	}, asyncId);
+}
+
+void WrapperExtension::OnGetAchievementInfoMessage(const std::string& name, double asyncId)
+{
+	bool isAchieved = false;
+	uint32_t unlockTime = 0;
+	bool isOk = SteamUserStats()->GetAchievementAndUnlockTime(name.c_str(), &isAchieved, &unlockTime);
+
+	SendAsyncResponse({
+		{ "isOk", isOk },
+		{ "isAchieved", isAchieved },
+		// Note that in the Steamworks SDK the unlock time is in seconds since Jan 1 1970, whereas Construct/JavaScript
+		// tend to use the convention of milliseconds since Jan 1 1970, so multiply the returned time by 1000
+		// (also returning as a double to match the number type used by JavaScript).
+		{ "unlockTime", static_cast<double>(unlockTime) * 1000.0 }
 	}, asyncId);
 }
 

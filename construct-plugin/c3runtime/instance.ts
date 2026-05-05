@@ -40,6 +40,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	// For running callbacks while loading
 	#loadingTimerId = -1;
 
+	// Achievement state
+	#achievementIsAchieved = false;
+	#achievementUnlockTime = 0;
+
 	// For triggers. Note as these are read externally they are left as public properties
 	// but with an underscore to indicate internal use.
 	_triggerAchievement = "";
@@ -243,6 +247,16 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		this._sendWrapperExtensionMessage("show-overlay-invite-dialog", [lobbyId]);
 	}
+
+	_getAchievementIsAchieved()
+	{
+		return this.#achievementIsAchieved;
+	}
+
+	_getAchievementUnlockTime()
+	{
+		return this.#achievementUnlockTime;
+	}
 	
 	_saveToJson()
 	{
@@ -398,6 +412,40 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		// Return result for script interface
 		return isOk;
+	}
+
+	async getAchievementInfo(achievement: string)
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		
+		const result = (await this._sendWrapperExtensionMessageAsync("get-achievement-info", [achievement])) as JSONObject;
+
+		this._triggerAchievement = achievement;
+
+		const isOk = result["isOk"];
+		if (isOk)
+		{
+			const isAchieved = (result["isAchieved"] as boolean);
+			const unlockTime = (result["unlockTime"] as number);
+			this.#achievementIsAchieved = isAchieved;
+			this.#achievementUnlockTime = unlockTime;
+
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetAchievementInfoSuccess);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoSuccess);
+
+			// Return result for script interface
+			return { isAchieved, unlockTime	};
+		}
+		else
+		{
+			console.warn(`[Steamworks-Ext] Failed to get achievement '${achievement}' info`);
+
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetAchievementInfoError);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoError);
+
+			return null;		// return result for script interface
+		}
 	}
 
 	async checkDlcInstalled(appIds: number[])

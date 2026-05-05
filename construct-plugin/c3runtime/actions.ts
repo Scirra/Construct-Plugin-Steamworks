@@ -30,6 +30,11 @@ C3.Plugins.Steamworks_Ext.Acts =
 		await this.clearAchievement(achievement);
 	},
 
+	async GetAchievementInfo(this: SDKInstanceClass, achievement: string)
+	{
+		await this.getAchievementInfo(achievement);
+	},
+
 	async CheckDLCInstalled(this: SDKInstanceClass, appIds: string | number)
 	{
 		let appIdArr;

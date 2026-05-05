@@ -34,6 +34,7 @@ public:
 	void OnShowOverlayInviteDialog(const std::string& steamIdLobbyStr);
 	void OnSetAchievementMessage(const std::string& name, double asyncId);
 	void OnClearAchievementMessage(const std::string& name, double asyncId);
+	void OnGetAchievementInfoMessage(const std::string& name, double asyncId);
 	void OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId);
 	void OnInstallDLCMessage(AppId_t appId);
 	void OnUninstallDLCMessage(AppId_t appId);
