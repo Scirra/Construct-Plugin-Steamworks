@@ -89,5 +89,40 @@ C3.Plugins.Steamworks_Ext.Exps =
 	TicketHexStr(this: SDKInstanceClass)
 	{
 		return this.ticketHexStr;
+	},
+
+	GlobalRankNew(this: SDKInstanceClass)
+	{
+		return this._triggerGlobalRankNew;
+	},
+
+	GlobalRankPrevious(this: SDKInstanceClass)
+	{
+		return this._triggerGlobalRankPrevious;
+	},
+
+	LeaderboardName(this: SDKInstanceClass)
+	{
+		return this._triggerLeaderboardName;
+	},
+
+	LeaderboardEntryCount(this: SDKInstanceClass, leaderboardName: string)
+	{
+		return this._getLeaderboardEntryCount(leaderboardName);
+	},
+
+	LeaderboardEntryNameAt(this: SDKInstanceClass, leaderboardName: string, index: number)
+	{
+		return this._getLeaderboardEntryAt(leaderboardName, index)?.personaName ?? "";
+	},
+
+	LeaderboardEntryRankAt(this: SDKInstanceClass, leaderboardName: string, index: number)
+	{
+		return this._getLeaderboardEntryAt(leaderboardName, index)?.globalRank ?? "";
+	},
+
+	LeaderboardEntryScoreAt(this: SDKInstanceClass, leaderboardName: string, index: number)
+	{
+		return this._getLeaderboardEntryAt(leaderboardName, index)?.score ?? "";
 	}
 };

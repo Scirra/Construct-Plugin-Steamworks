@@ -25,7 +25,8 @@
 				},
 				"aceCategories": {
 					"steamworks": "Steamworks",
-					"stats-achievements": "Stats / Achievements", 
+					"stats-achievements": "Stats / Achievements",
+					"leaderboards": "Leaderboards",
 					"dlc": "DLC",
 					"authentication": "Authentication",
 					"rich-presence": "Rich presence"
@@ -150,6 +151,75 @@
 						"list-name": "On get auth ticket for web api error",
 						"display-text": "On get auth ticket for web api error",
 						"description": "Triggered after 'Get auth ticket for web API' when a ticket failed to be obtained."
+					},
+					"on-any-upload-leaderboard-score-success": {
+						"list-name": "On any upload score success",
+						"display-text": "On any upload leaderboard score success",
+						"description": "Triggered after any 'Upload leaderboard score' action when successfully submitted."
+					},
+					"on-upload-leaderboard-score-success": {
+						"list-name": "On upload score success",
+						"display-text": "On upload leaderboard [i]{0}[/i] score success",
+						"description": "Triggered after 'Upload leaderboard score' when successfully submitted.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "The leaderboard name"
+							}
+						}
+					},
+					"on-any-upload-leaderboard-score-error": {
+						"list-name": "On any upload score error",
+						"display-text": "On any upload leaderboard score error",
+						"description": "Triggered after any 'Upload leaderboard score' action when submission failed."
+					},
+					"on-upload-leaderboard-score-error": {
+						"list-name": "On upload score error",
+						"display-text": "On upload leaderboard [i]{0}[/i] score error",
+						"description": "Triggered after 'Upload leaderboard score' when submission failed.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "The leaderboard name"
+							}
+						}
+					},
+					"did-score-change": {
+						"list-name": "Did score change",
+						"display-text": "Did score change",
+						"description": "In a score upload success trigger, true if the leaderboard score was changed."
+					},
+					"on-any-download-leaderboard-entries-success": {
+						"list-name": "On any download entries success",
+						"display-text": "On any download leaderboard entries success",
+						"description": "Triggered after any 'Download leaderboard entries' action once successfully downloaded."
+					},
+					"on-download-leaderboard-entries-success": {
+						"list-name": "On download entries success",
+						"display-text": "On download leaderboard [i]{0}[/i] entries success",
+						"description": "Triggered after 'Download leaderboard entries' action successfully downloaded.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "The leaderboard name"
+							}
+						}
+					},
+					"on-any-download-leaderboard-entries-error": {
+						"list-name": "On any download entries error",
+						"display-text": "On any download leaderboard entries error",
+						"description": "Triggered after any 'Download leaderboard entries' action if the download fails."
+					},
+					"on-download-leaderboard-entries-error": {
+						"list-name": "On download entries error",
+						"display-text": "On download leaderboard [i]{0}[/i] entries error",
+						"description": "Triggered after 'Download leaderboard entries' if the download fails.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "The leaderboard name"
+							}
+						}
 					}
 				},
 				"actions": {
@@ -311,6 +381,53 @@
 						"list-name": "Trigger screenshot",
 						"display-text": "Trigger screenshot",
 						"description": "Activate the Steam feature to take a screenshot. Requires the overlay to be active."
+					},
+					"upload-leaderboard-score": {
+						"list-name": "Upload score",
+						"display-text": "Upload leaderboard [i]{0}[/i] score [b]{1}[/b] (force update: {2})",
+						"description": "Submit a score to a leaderboard.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "Name of the leaderboard to submit to"
+							},
+							"score": {
+								"name": "Score",
+								"desc": "The score to submit. Only integers are supported."
+							},
+							"force-update": {
+								"name": "Force update",
+								"desc": "Check to always replace the user's score. Otherwise it only updates the user's score if it is higher."
+							}
+						}
+					},
+					"download-leaderboard-entries": {
+						"list-name": "Download entries",
+						"display-text": "Download leaderboard [i]{0}[/i] entries ({1}, start [i]{2}[/i], end [i]{3}[/i])",
+						"description": "Download the scores on a leaderboard.",
+						"params": {
+							"leaderboard-name": {
+								"name": "Leaderboard name",
+								"desc": "Name of the leaderboard to submit to"
+							},
+							"data": {
+								"name": "Data",
+								"desc": "The kind of leaderboard data to request.",
+								"items": {
+									"global": "global",
+									"global-around-user": "global around user",
+									"friends": "friends"
+								}
+							},
+							"start": {
+								"name": "Start",
+								"desc": "Start index of entries to fetch. Note this is 1-based for global scores, and may be negative for scores around the user."
+							},
+							"end": {
+								"name": "End",
+								"desc": "End index of entries to fetch, inclusive."
+							}
+						}
 					}
 				},
 				"expressions": {
@@ -381,6 +498,70 @@
 					"ticket-hex-str": {
 						"description": "The ticket that was created as a hexadecimal string.",
 						"translated-name": "TicketHexStr"
+					},
+					"global-rank-new": {
+						"description": "In a score upload success trigger, the new global rank.",
+						"translated-name": "GlobalRankNew"
+					},
+					"global-rank-previous": {
+						"description": "In a score upload success trigger, the previous global rank, or 0 if none.",
+						"translated-name": "GlobalRankPrevious"
+					},
+					"leaderboard-name": {
+						"description": "In a leaderboard trigger, the name of the leaderboard.",
+						"translated-name": "LeaderboardName"
+					},
+					"leaderboard-entry-count": {
+						"description": "The number of downloaded entries for a leaderboard.",
+						"translated-name": "LeaderboardEntryCount",
+						"params": {
+							"leaderboard-name": {
+								"name": "LeaderboardName",
+								"desc": "Name of the leaderboard"
+							}
+						}
+					},
+					"leaderboard-entry-name-at": {
+						"description": "The persona name of a leaderboard entry at a zero-based index.",
+						"translated-name": "LeaderboardEntryNameAt",
+						"params": {
+							"leaderboard-name": {
+								"name": "LeaderboardName",
+								"desc": "Name of the leaderboard"
+							},
+							"index": {
+								"name": "Index",
+								"desc": "Zero-based entry index"
+							}
+						}
+					},
+					"leaderboard-entry-rank-at": {
+						"description": "The rank of a leaderboard entry at a zero-based index.",
+						"translated-name": "LeaderboardEntryRankAt",
+						"params": {
+							"leaderboard-name": {
+								"name": "LeaderboardName",
+								"desc": "Name of the leaderboard"
+							},
+							"index": {
+								"name": "Index",
+								"desc": "Zero-based entry index"
+							}
+						}
+					},
+					"leaderboard-entry-score-at": {
+						"description": "The score of a leaderboard entry at a zero-based index.",
+						"translated-name": "LeaderboardEntryScoreAt",
+						"params": {
+							"leaderboard-name": {
+								"name": "LeaderboardName",
+								"desc": "Name of the leaderboard"
+							},
+							"index": {
+								"name": "Index",
+								"desc": "Zero-based entry index"
+							}
+						}
 					}
 				}
 			}

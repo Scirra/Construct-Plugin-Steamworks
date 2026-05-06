@@ -54,6 +54,33 @@ C3.Plugins.Steamworks_Ext.Cnds =
         },
         OnGetAuthTicketForWebApiError() {
             return true;
+        },
+        OnAnyUploadLeaderboardScoreSuccess() {
+            return true;
+        },
+        OnUploadLeaderboardScoreSuccess(leaderboardName) {
+            return leaderboardName === this._triggerLeaderboardName;
+        },
+        OnAnyUploadLeaderboardScoreError() {
+            return true;
+        },
+        OnUploadLeaderboardScoreError(leaderboardName) {
+            return leaderboardName === this._triggerLeaderboardName;
+        },
+        DidScoreChange() {
+            return this._triggerDidScoreChange;
+        },
+        OnAnyDownloadLeaderboardEntriesSuccess() {
+            return true;
+        },
+        OnDownloadLeaderboardEntriesSuccess(leaderboardName) {
+            return leaderboardName === this._triggerLeaderboardName;
+        },
+        OnAnyDownloadLeaderboardEntriesError() {
+            return true;
+        },
+        OnDownloadLeaderboardEntriesError(leaderboardName) {
+            return leaderboardName === this._triggerLeaderboardName;
         }
     };
 export {};

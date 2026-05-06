@@ -48,7 +48,10 @@ void WrapperExtension::SendAsyncResponse(const std::map<std::string, ExtensionPa
 WrapperExtension::WrapperExtension(IApplication* iApplication_)
 	: iApplication(iApplication_),
 	  didSteamInitOk(false),
-	  pendingAuthTicketForWebApiAsyncId(-1)
+	  pendingAuthTicketForWebApiAsyncId(-1),
+	  pendingFindLeaderboardAsyncId(-1),
+	  pendingUploadLeaderboardScoreAsyncId(-1),
+	  pendingDownloadLeaderboardEntriesAsyncId(-1)
 {
 	LogMessage("Loaded extension");
 
@@ -304,6 +307,36 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 		HAuthTicket hAuthTicket = static_cast<HAuthTicket>(params[0].GetNumber());
 
 		OnCancelAuthTicket(hAuthTicket);
+	}
+	else if (messageId == "find-leaderboard")
+	{
+		const std::string& leaderboardName = params[0].GetString();
+
+		OnFindLeaderboard(leaderboardName, asyncId);
+	}
+	else if (messageId == "upload-leaderboard-score")
+	{
+		const std::string& hSteamLeaderboardStr = params[0].GetString();
+		int32_t score = static_cast<int32_t>(params[1].GetNumber());
+		bool forceUpdate = params[2].GetBool();
+
+		OnUploadLeaderboardScore(hSteamLeaderboardStr, score, forceUpdate, asyncId);
+	}
+	else if (messageId == "download-leaderboard-entries")
+	{
+		const std::string& hSteamLeaderboardStr = params[0].GetString();
+		const std::string& dataRequestStr = params[1].GetString();
+		int start = static_cast<int>(params[2].GetNumber());
+		int end = static_cast<int>(params[3].GetNumber());
+
+		OnDownloadLeaderboardEntries(hSteamLeaderboardStr, dataRequestStr, start, end, asyncId);
+	}
+	else if (messageId == "get-leaderboard-entry")
+	{
+		const std::string& hSteamLeaderboardEntriesStr = params[0].GetString();
+		int index = static_cast<int>(params[1].GetNumber());
+
+		OnGetLeaderboardEntry(hSteamLeaderboardEntriesStr, index, asyncId);
 	}
 	else if (messageId == "set-rich-presence")
 	{
@@ -581,6 +614,193 @@ void WrapperExtension::OnGetTicketForWebApiResponse(GetTicketForWebApiResponse_t
 void WrapperExtension::OnCancelAuthTicket(HAuthTicket hAuthTicket)
 {
 	SteamUser()->CancelAuthTicket(hAuthTicket);
+}
+
+void WrapperExtension::OnFindLeaderboard(const std::string& leaderboardName, double asyncId)
+{
+	if (pendingFindLeaderboardAsyncId != -1)
+	{
+		LogMessage("OnFindLeaderboard(): another call is in progress so failing");
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	pendingFindLeaderboardAsyncId = asyncId;
+
+	SteamAPICall_t hSteamApiCall = SteamUserStats()->FindLeaderboard(leaderboardName.c_str());
+	findLeaderboardCallResult.Set(hSteamApiCall, this, &WrapperExtension::OnFindLeaderboardResult);
+}
+
+void WrapperExtension::OnFindLeaderboardResult(LeaderboardFindResult_t* pCallback, bool bIOFailure)
+{
+	// Use the asyncId from the call to OnFindLeaderboard().
+	double asyncId = pendingFindLeaderboardAsyncId;
+	pendingFindLeaderboardAsyncId = -1;
+
+	// If the asyncId is -1, then we weren't expecting this callback. Just log a message and bail out.
+	if (asyncId == -1)
+	{
+		LogMessage("OnFindLeaderboardResult() callback ignored due to no async id");
+		return;
+	}
+
+	if (bIOFailure || !pCallback->m_bLeaderboardFound)
+	{
+		LogMessage("OnFindLeaderboard(): error finding leaderboard");
+
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	// Leaderboard found: return success. Pass hSteamLeaderboard back to JavaScript to make
+	// further calls with. Note that SteamLeaderboard_t is a uint64 which is too large to
+	// fit in JavaScript's standard number type, so pass it back as a string.
+	SendAsyncResponse({
+		{ "isOk", true },
+		{ "hSteamLeaderboard", std::to_string(pCallback->m_hSteamLeaderboard) }
+	}, asyncId);
+}
+
+void WrapperExtension::OnUploadLeaderboardScore(const std::string& hSteamLeaderboardStr, int32_t score, bool forceUpdate, double asyncId)
+{
+	if (pendingUploadLeaderboardScoreAsyncId != -1)
+	{
+		LogMessage("OnUploadLeaderboardScore(): another call is in progress so failing");
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	pendingUploadLeaderboardScoreAsyncId = asyncId;
+
+	// Note the steam leaderboard handle is parsed back to a uint64 from a string
+	SteamLeaderboard_t hSteamLeaderboard = std::stoull(hSteamLeaderboardStr);
+	ELeaderboardUploadScoreMethod method = (forceUpdate ? k_ELeaderboardUploadScoreMethodForceUpdate : k_ELeaderboardUploadScoreMethodKeepBest);
+
+	SteamAPICall_t hSteamApiCall = SteamUserStats()->UploadLeaderboardScore(hSteamLeaderboard, method, score, nullptr, 0);
+	uploadLeaderboardScoreCallResult.Set(hSteamApiCall, this, &WrapperExtension::OnUploadLeaderboardScoreResult);
+}
+
+void WrapperExtension::OnUploadLeaderboardScoreResult(LeaderboardScoreUploaded_t* pCallback, bool bIOFailure)
+{
+	// Use the asyncId from the call to OnUploadLeaderboardScore().
+	double asyncId = pendingUploadLeaderboardScoreAsyncId;
+	pendingUploadLeaderboardScoreAsyncId = -1;
+
+	// If the asyncId is -1, then we weren't expecting this callback. Just log a message and bail out.
+	if (asyncId == -1)
+	{
+		LogMessage("OnUploadLeaderboardScore() callback ignored due to no async id");
+		return;
+	}
+
+	if (bIOFailure || !pCallback->m_bSuccess)
+	{
+		LogMessage("OnUploadLeaderboardScore() failed");
+
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	SendAsyncResponse({
+		{ "isOk", true },
+		{ "hSteamLeaderboard", std::to_string(pCallback->m_hSteamLeaderboard) },
+		{ "score", static_cast<double>(pCallback->m_nScore) },
+		{ "didScoreChange", static_cast<bool>(pCallback->m_bScoreChanged) },
+		{ "globalRankNew", static_cast<double>(pCallback->m_nGlobalRankNew) },
+		{ "globalRankPrevious", static_cast<double>(pCallback->m_nGlobalRankPrevious) }
+	}, asyncId);
+}
+
+void WrapperExtension::OnDownloadLeaderboardEntries(const std::string& hSteamLeaderboardStr, const std::string& dataRequestStr, int start, int end, double asyncId)
+{
+	if (pendingDownloadLeaderboardEntriesAsyncId != -1)
+	{
+		LogMessage("OnDownloadLeaderboardEntries(): another call is in progress so failing");
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	pendingDownloadLeaderboardEntriesAsyncId = asyncId;
+
+	SteamLeaderboard_t hSteamLeaderboard = std::stoull(hSteamLeaderboardStr);
+	ELeaderboardDataRequest dataRequest;
+	if (dataRequestStr == "global")
+		dataRequest = k_ELeaderboardDataRequestGlobal;
+	else if (dataRequestStr == "global-around-user")
+		dataRequest = k_ELeaderboardDataRequestGlobalAroundUser;
+	else if (dataRequestStr == "friends")
+		dataRequest = k_ELeaderboardDataRequestFriends;
+	else
+		return;		// bad data request type - shouldn't happen, JS side validates
+
+	SteamAPICall_t hSteamApiCall = SteamUserStats()->DownloadLeaderboardEntries(hSteamLeaderboard, dataRequest, start, end);
+	downloadLeaderboardEntriesCallResult.Set(hSteamApiCall, this, &WrapperExtension::OnDownloadLeaderboardEntriesResult);
+}
+
+void WrapperExtension::OnDownloadLeaderboardEntriesResult(LeaderboardScoresDownloaded_t* pCallback, bool bIOFailure)
+{
+	// Use the asyncId from the call to OnDownloadLeaderboardEntries().
+	double asyncId = pendingDownloadLeaderboardEntriesAsyncId;
+	pendingDownloadLeaderboardEntriesAsyncId = -1;
+
+	// If the asyncId is -1, then we weren't expecting this callback. Just log a message and bail out.
+	if (asyncId == -1)
+	{
+		LogMessage("OnDownloadLeaderboardEntries() callback ignored due to no async id");
+		return;
+	}
+
+	if (bIOFailure)
+	{
+		LogMessage("OnDownloadLeaderboardEntries() failed");
+
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+		return;
+	}
+
+	SendAsyncResponse({
+		{ "isOk", true },
+		{ "hSteamLeaderboard", std::to_string(pCallback->m_hSteamLeaderboard) },
+		{ "hSteamLeaderboardEntries", std::to_string(pCallback->m_hSteamLeaderboardEntries)},
+		{ "entryCount", static_cast<double>(pCallback->m_cEntryCount) }
+	}, asyncId);
+}
+
+void WrapperExtension::OnGetLeaderboardEntry(const std::string& hSteamLeaderboardEntriesStr, int index, double asyncId)
+{
+	// This message returns a single entry. The JavaScript side requests each entry individually, as it is easier
+	// to manage async code on the JavaScript side.
+	SteamLeaderboardEntries_t hSteamLeaderboardEntries = std::stoull(hSteamLeaderboardEntriesStr);
+	LeaderboardEntry_t entry;
+	bool isOk = SteamUserStats()->GetDownloadedLeaderboardEntry(hSteamLeaderboardEntries, index, &entry, nullptr, 0);
+
+	if (isOk)
+	{
+		SendAsyncResponse({
+			{ "isOk", true },
+			{ "personaName", SteamFriends()->GetFriendPersonaName(entry.m_steamIDUser) },
+			{ "globalRank", static_cast<double>(entry.m_nGlobalRank) },
+			{ "score", static_cast<double>(entry.m_nScore) }
+		}, asyncId);
+	}
+	else
+	{
+		SendAsyncResponse({
+			{ "isOk", false }
+		}, asyncId);
+	}
 }
 
 void WrapperExtension::OnSetRichPresence(const std::string& key, const std::string& value)

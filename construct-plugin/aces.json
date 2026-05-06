@@ -196,6 +196,100 @@
 			}
 		]
 	},
+	"leaderboards": {
+		"conditions": [{
+			"id":"on-any-upload-leaderboard-score-success",
+			"scriptName": "OnAnyUploadLeaderboardScoreSuccess",
+			"isTrigger": true
+		}, {
+			"id":"on-upload-leaderboard-score-success",
+			"scriptName": "OnUploadLeaderboardScoreSuccess",
+			"isTrigger": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string" }]
+		}, {
+			"id":"on-any-upload-leaderboard-score-error",
+			"scriptName": "OnAnyUploadLeaderboardScoreError",
+			"isTrigger": true
+		}, {
+			"id":"on-upload-leaderboard-score-error",
+			"scriptName": "OnUploadLeaderboardScoreError",
+			"isTrigger": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string" }]
+		}, {
+			"id": "did-score-change",
+			"scriptName": "DidScoreChange"
+		}, {
+			"id":"on-any-download-leaderboard-entries-success",
+			"scriptName": "OnAnyDownloadLeaderboardEntriesSuccess",
+			"isTrigger": true
+		}, {
+			"id":"on-download-leaderboard-entries-success",
+			"scriptName": "OnDownloadLeaderboardEntriesSuccess",
+			"isTrigger": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string" }]
+		}, {
+			"id":"on-any-download-leaderboard-entries-error",
+			"scriptName": "OnAnyDownloadLeaderboardEntriesError",
+			"isTrigger": true
+		}, {
+			"id":"on-download-leaderboard-entries-error",
+			"scriptName": "OnDownloadLeaderboardEntriesError",
+			"isTrigger": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string" }]
+		}],
+		"actions": [{
+			"id": "upload-leaderboard-score",
+			"scriptName": "UploadLeaderboardScore",
+			"isAsync": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string"	},
+					   {	"id": "score",				"type": "number"	},
+					   {	"id": "force-update",		"type": "boolean"	}]
+		}, {
+			"id": "download-leaderboard-entries",
+			"scriptName": "DownloadLeaderboardEntries",
+			"isAsync": true,
+			"params": [{	"id": "leaderboard-name",	"type": "string"	},
+					   {	"id": "data",				"type": "combo",	"items": ["global", "global-around-user", "friends"]	},
+					   {	"id": "start",				"type": "number"	},
+					   {	"id": "end",				"type": "number"	}]
+		}],
+		"expressions": [{
+			"id": "global-rank-new",
+			"expressionName": "GlobalRankNew",
+			"returnType": "number"
+		}, {
+			"id": "global-rank-previous",
+			"expressionName": "GlobalRankPrevious",
+			"returnType": "number"
+		}, {
+			"id": "leaderboard-name",
+			"expressionName": "LeaderboardName",
+			"returnType": "string"
+		}, {
+			"id": "leaderboard-entry-count",
+			"expressionName": "LeaderboardEntryCount",
+			"returnType": "number",
+			"params": [{	"id": "leaderboard-name",	"type": "string"	}]
+		}, {
+			"id": "leaderboard-entry-name-at",
+			"expressionName": "LeaderboardEntryNameAt",
+			"returnType": "string",
+			"params": [{	"id": "leaderboard-name",	"type": "string"	},
+					   {	"id": "index",				"type": "number"	}]
+		}, {
+			"id": "leaderboard-entry-rank-at",
+			"expressionName": "LeaderboardEntryRankAt",
+			"returnType": "number",
+			"params": [{	"id": "leaderboard-name",	"type": "string"	},
+					   {	"id": "index",				"type": "number"	}]
+		}, {
+			"id": "leaderboard-entry-score-at",
+			"expressionName": "LeaderboardEntryScoreAt",
+			"returnType": "number",
+			"params": [{	"id": "leaderboard-name",	"type": "string"	},
+					   {	"id": "index",				"type": "number"	}]
+		}]
+	},
 	"dlc": {
 		"conditions": [{
 			"id": "on-dlc-installed-check-complete",

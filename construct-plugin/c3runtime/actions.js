@@ -47,6 +47,12 @@ C3.Plugins.Steamworks_Ext.Acts =
         },
         TriggerScreenshot() {
             this.triggerScreenshot();
+        },
+        async UploadLeaderboardScore(leaderboardName, score, forceUpdate) {
+            await this.uploadLeaderboardScore(leaderboardName, score, forceUpdate);
+        },
+        async DownloadLeaderboardEntries(leaderboardName, dataType, start, end) {
+            await this.downloadLeaderboardEntries(leaderboardName, ["global", "global-around-user", "friends"][dataType], start, end);
         }
     };
 export {};

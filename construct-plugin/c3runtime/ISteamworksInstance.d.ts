@@ -10,6 +10,25 @@ interface SteamworksAuthTicketInfo {
     ticketHexStr: string;
 }
 
+interface SteamworksScoreUploadResult {
+    score: number;
+    didScoreChange: boolean;
+    globalRankNew: number;
+    globalRankPrevious: number;
+}
+
+type SteamworksLeaderboardDataType = "global" | "global-around-user" | "friends";
+
+interface SteamworksLeaderboardEntries {
+    entries: SteamworksLeaderboardEntry[];
+}
+
+interface SteamworksLeaderboardEntry {
+    personaName: string;
+    globalRank: number;
+    score: number;
+}
+
 declare class ISteamworksInstance {
     readonly isAvailble: boolean;
     readonly isRunningOnSteamDeck: boolean;
@@ -32,6 +51,9 @@ declare class ISteamworksInstance {
     unlockAchievement(achievement: string): Promise<boolean>;
     clearAchievement(achievement: string): Promise<boolean>;
     getAchievementInfo(achievement: string): Promise<SteamworksAchievementInfo | null>;
+
+    uploadLeaderboardScore(leaderboardName: string, score: number, forceUpdate: boolean): Promise<SteamworksScoreUploadResult>;
+    downloadLeaderboardEntries(leaderboardName: string, dataType: SteamworksLeaderboardDataType, start: number, end: number): Promise<SteamworksLeaderboardEntries>;
 
     checkDlcInstalled(appIds: number): Promise<boolean>;
     isDlcInstalled(appId: number): boolean;

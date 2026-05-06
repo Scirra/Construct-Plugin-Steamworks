@@ -16,6 +16,19 @@ function ArrayBufferToBase64(arrayBuffer: ArrayBuffer)
 }
 
 const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"];
+const VALID_LEADERBOARD_DATA_TYPES = new Set(["global", "global-around-user", "friends"]);
+
+type LeaderboardEntry = {
+	personaName: string;
+	globalRank: number;
+	score: number;
+};
+
+type LeaderboardData = {
+	name: string;
+	hSteamLeaderboard: string,		// cache of the Steam handle for further calls
+	entries: LeaderboardEntry[]
+};
 
 class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 {
@@ -44,10 +57,17 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	#achievementIsAchieved = false;
 	#achievementUnlockTime = 0;
 
+	// Leaderboards state
+	#leaderboardData = new Map<string, LeaderboardData>();
+
 	// For triggers. Note as these are read externally they are left as public properties
 	// but with an underscore to indicate internal use.
 	_triggerAchievement = "";
 	_triggerAppId = 0;
+	_triggerLeaderboardName = "";
+	_triggerDidScoreChange = false;
+	_triggerGlobalRankNew = 0;
+	_triggerGlobalRankPrevious = 0;
 
 	// Authentication
 	#hAuthTicket = 0;
@@ -257,6 +277,50 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	{
 		return this.#achievementUnlockTime;
 	}
+
+	async #getSteamLeaderboardData(leaderboardName: string)
+	{
+		// Check if already obtained handle for this leaderboard name
+		let data = this.#leaderboardData.get(leaderboardName);
+		if (data)
+			return data;
+
+		// Otherwise request the Steam leaderboard handle from the wrapper extension, and cache
+		// it for further calls.
+		const result = (await this._sendWrapperExtensionMessageAsync("find-leaderboard", [leaderboardName])) as JSONObject;
+		if (result["isOk"])
+		{
+			data = {
+				name: leaderboardName,
+				hSteamLeaderboard: (result["hSteamLeaderboard"] as string),
+				entries: []
+			};
+			this.#leaderboardData.set(leaderboardName, data);
+			return data;
+
+		}
+		else
+		{
+			throw new Error(`cannot find leaderboard '${leaderboardName}'`);
+		}
+	}
+
+	// Helper methods for expressions
+	_getLeaderboardEntryCount(leaderboardName: string)
+	{
+		const data = this.#leaderboardData.get(leaderboardName);
+		return data?.entries.length ?? 0;
+	}
+
+	_getLeaderboardEntryAt(leaderboardName: string, index: number)
+	{
+		index = Math.floor(index);
+		const data = this.#leaderboardData.get(leaderboardName);
+		if (!data || index < 0 || index >= data.entries.length)
+			return null;
+
+		return data.entries[index];
+	}
 	
 	_saveToJson()
 	{
@@ -441,6 +505,139 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoError);
 
 			return null;		// return result for script interface
+		}
+	}
+
+	async uploadLeaderboardScore(leaderboardName: string, score: number, forceUpdate: boolean)
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+
+		try {
+			// First get the leaderboard data, which ensures the Steam leaderboard handle is available
+			const data = await this.#getSteamLeaderboardData(leaderboardName);
+
+			// Use the Steam leaderboard handle to perform the score upload
+			const result = (await this._sendWrapperExtensionMessageAsync("upload-leaderboard-score", [data.hSteamLeaderboard, score, forceUpdate])) as JSONObject;
+			if (result["isOk"])
+			{
+				// Read back result values
+				const submittedScore = (result["score"] as number);
+				const didScoreChange = (result["didScoreChange"] as boolean);
+				const globalRankNew = (result["globalRankNew"] as number);
+				const globalRankPrevious = (result["globalRankPrevious"] as number);
+
+				// Fire triggers for event system
+				this._triggerLeaderboardName = leaderboardName;
+				this._triggerDidScoreChange = didScoreChange;
+				this._triggerGlobalRankNew = globalRankNew;
+				this._triggerGlobalRankPrevious = globalRankPrevious;
+				this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyUploadLeaderboardScoreSuccess);
+				this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnUploadLeaderboardScoreSuccess);
+
+				// Return value for script API
+				return {
+					score: submittedScore,
+					didScoreChange,
+					globalRankNew,
+					globalRankPrevious
+				};
+			}
+			else
+			{
+				throw new Error(`failed to upload leaderboard '${leaderboardName}' score`);
+			}
+		}
+		catch (err)
+		{
+			console.warn(`[Steamworks] Error uploading leaderboard score: `, err);
+
+			// Fire error triggerd for event system
+			this._triggerLeaderboardName = leaderboardName;
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyUploadLeaderboardScoreError);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnUploadLeaderboardScoreError);
+
+			// Rethrow exception for scripting
+			throw err;
+		}
+	}
+
+	async downloadLeaderboardEntries(leaderboardName: string, dataType: string, start: number, end: number)
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		if (!VALID_LEADERBOARD_DATA_TYPES.has(dataType))
+			throw new Error("invalid dataType");
+
+		try {
+			// First get the leaderboard data, which ensures the Steam leaderboard handle is available
+			const data = await this.#getSteamLeaderboardData(leaderboardName);
+
+			// Use the Steam leaderboard handle to request to download the leaderboard entries
+			const result = (await this._sendWrapperExtensionMessageAsync("download-leaderboard-entries", [data.hSteamLeaderboard, dataType, start, end])) as JSONObject;
+			if (!result["isOk"])
+				throw new Error(`failed to download leaderboard '${leaderboardName}' entries`);
+
+			// Once the leaderboard entries are downloaded, the wrapper extension provides an additional handle for
+			// reading the resulting entries, as well as the entry count.
+			const hSteamLeaderboardEntries = (result["hSteamLeaderboardEntries"] as string);
+			const entryCount = (result["entryCount"] as number);
+
+			// Before reading the entries, create an array with the appropriate number of entries in an empty state.
+			const entries: LeaderboardEntry[] = [];
+			for (let i = 0; i < entryCount; ++i)
+			{
+				entries.push({ personaName: "", globalRank: 0, score: 0 });
+			}
+
+			// Each entry must be read with an individual "get-leaderboard-entry" message to the wrapper extension
+			// using the obtained leaderboard entry handle. Each message is async, but they can all be sent in parallel,
+			// writing the result in to the corresponding index in the pre-filled entries array, ensuring the sequence
+			// is preserved even if promises resolve in an unpredictable order.
+			const promises = [];
+			for (let i = 0; i < entryCount; ++i)
+			{
+				// Note this uses an IIAFE
+				promises.push((async () =>
+				{
+					const result = (await this._sendWrapperExtensionMessageAsync("get-leaderboard-entry", [hSteamLeaderboardEntries, i])) as JSONObject;
+					if (!result["isOk"])
+						throw new Error(`invalid leaderboard entry`);
+
+					const entry = entries[i];
+					entry.personaName = (result["personaName"] as string);
+					entry.globalRank = (result["globalRank"] as number);
+					entry.score = (result["score"] as number);
+				})())
+			}
+
+			// Wait for all entry reads to complete in parallel
+			await Promise.all(promises);
+
+			// Cache entries in the leaderboard data for returning in expressions
+			data.entries = entries;
+			
+			// Fire success triggers for event system
+			this._triggerLeaderboardName = leaderboardName;
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyDownloadLeaderboardEntriesSuccess);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnDownloadLeaderboardEntriesSuccess);
+
+			// Return value for script API
+			return {
+				entries
+			};
+		}
+		catch (err)
+		{
+			console.warn(`[Steamworks] Error downloading leaderboard entries: `, err);
+
+			// Fire error triggers for event system
+			this._triggerLeaderboardName = leaderboardName;
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyDownloadLeaderboardEntriesError);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnDownloadLeaderboardEntriesError);
+
+			// Rethrow exception for scripting
+			throw err;
 		}
 	}
 

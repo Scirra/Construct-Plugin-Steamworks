@@ -79,5 +79,15 @@ C3.Plugins.Steamworks_Ext.Acts =
 	TriggerScreenshot(this: SDKInstanceClass)
 	{
 		this.triggerScreenshot();
+	},
+
+	async UploadLeaderboardScore(this: SDKInstanceClass, leaderboardName: string, score: number, forceUpdate: boolean)
+	{
+		await this.uploadLeaderboardScore(leaderboardName, score, forceUpdate);
+	},
+
+	async DownloadLeaderboardEntries(this: SDKInstanceClass, leaderboardName: string, dataType: number, start: number, end: number)
+	{
+		await this.downloadLeaderboardEntries(leaderboardName, ["global", "global-around-user", "friends"][dataType], start, end);
 	}
 };

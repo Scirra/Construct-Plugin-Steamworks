@@ -93,5 +93,50 @@ C3.Plugins.Steamworks_Ext.Cnds =
 	OnGetAuthTicketForWebApiError(this: SDKInstanceClass)
 	{
 		return true;
+	},
+
+	OnAnyUploadLeaderboardScoreSuccess(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnUploadLeaderboardScoreSuccess(this: SDKInstanceClass, leaderboardName: string)
+	{
+		return leaderboardName === this._triggerLeaderboardName;
+	},
+
+	OnAnyUploadLeaderboardScoreError(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnUploadLeaderboardScoreError(this: SDKInstanceClass, leaderboardName: string)
+	{
+		return leaderboardName === this._triggerLeaderboardName;
+	},
+
+	DidScoreChange(this: SDKInstanceClass)
+	{
+		return this._triggerDidScoreChange;
+	},
+
+	OnAnyDownloadLeaderboardEntriesSuccess(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnDownloadLeaderboardEntriesSuccess(this: SDKInstanceClass, leaderboardName: string)
+	{
+		return leaderboardName === this._triggerLeaderboardName;
+	},
+
+	OnAnyDownloadLeaderboardEntriesError(this: SDKInstanceClass)
+	{
+		return true;
+	},
+
+	OnDownloadLeaderboardEntriesError(this: SDKInstanceClass, leaderboardName: string)
+	{
+		return leaderboardName === this._triggerLeaderboardName;
 	}
 };

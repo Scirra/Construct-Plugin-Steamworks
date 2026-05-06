@@ -40,6 +40,10 @@ public:
 	void OnUninstallDLCMessage(AppId_t appId);
 	void OnGetAuthTicketForWebApi(const std::string& identity, double asyncId);
 	void OnCancelAuthTicket(HAuthTicket hAuthTicket);
+	void OnFindLeaderboard(const std::string& leaderboardName, double asyncId);
+	void OnUploadLeaderboardScore(const std::string& hSteamLeaderboardStr, int32_t score, bool forceUpdate, double asyncId);
+	void OnDownloadLeaderboardEntries(const std::string& hSteamLeaderboardStr, const std::string& dataRequestStr, int start, int end, double asyncId);
+	void OnGetLeaderboardEntry(const std::string& hSteamLeaderboardEntriesStr, int index, double asyncId);
 	void OnSetRichPresence(const std::string& key, const std::string& value);
 	void OnClearRichPresence();
 	void OnTriggerScreenshot();
@@ -58,6 +62,18 @@ protected:
 	bool didSteamInitOk;
 
 	double pendingAuthTicketForWebApiAsyncId;
+	double pendingFindLeaderboardAsyncId;
+	double pendingUploadLeaderboardScoreAsyncId;
+	double pendingDownloadLeaderboardEntriesAsyncId;
 
 	std::unique_ptr<SteamCallbacks> steamCallbacks;
+
+	void OnFindLeaderboardResult(LeaderboardFindResult_t* pCallback, bool bIOFailure);
+	CCallResult<WrapperExtension, LeaderboardFindResult_t> findLeaderboardCallResult;
+
+	void OnUploadLeaderboardScoreResult(LeaderboardScoreUploaded_t* pCallback, bool bIOFailure);
+	CCallResult<WrapperExtension, LeaderboardScoreUploaded_t> uploadLeaderboardScoreCallResult;
+
+	void OnDownloadLeaderboardEntriesResult(LeaderboardScoresDownloaded_t* pCallback, bool bIOFailure);
+	CCallResult<WrapperExtension, LeaderboardScoresDownloaded_t> downloadLeaderboardEntriesCallResult;
 };
