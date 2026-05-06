@@ -368,13 +368,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (!this.#isAvailable)
 			throw new Error("not available");
 		
-		const result_ = await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement]);
-
-		const result = result_ as JSONObject;
+		const result = (await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement])) as JSONObject;
 
 		this._triggerAchievement = achievement;
 
-		const isOk = result["isOk"];
+		const isOk = (result["isOk"] as boolean);
 		if (isOk)
 		{
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyAchievementUnlockSuccess);
@@ -395,12 +393,10 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (!this.#isAvailable)
 			throw new Error("not available");
 		
-		const result_ = await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement]);
-
-		const result = result_ as JSONObject;
+		const result = (await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement])) as JSONObject;
 
 		// Just log result as this is primarily for testing purposes
-		const isOk = result["isOk"];
+		const isOk = (result["isOk"] as boolean);
 		if (isOk)
 		{
 			console.info(`[Steamworks-Ext] Cleared achievement '${achievement}'`);
@@ -423,7 +419,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 		this._triggerAchievement = achievement;
 
-		const isOk = result["isOk"];
+		const isOk = (result["isOk"] as boolean);
 		if (isOk)
 		{
 			const isAchieved = (result["isAchieved"] as boolean);
@@ -453,11 +449,9 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (!this.#isAvailable)
 			throw new Error("not available");
 		
-		const result_ = await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")]);
+		const result = (await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")])) as JSONObject;
 
-		const result = result_ as JSONObject;
-
-		const isOk = result["isOk"];
+		const isOk = (result["isOk"] as boolean);
 		if (isOk)
 		{
 			const resultArr = (result["results"] as string).split(",");
@@ -509,9 +503,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (!this.#isAvailable)
 			throw new Error("not available");
 
-		const result_ = await this._sendWrapperExtensionMessageAsync("get-auth-ticket-for-web-api", [identity]);
-
-		const result = result_ as JSONObject;
+		const result = (await this._sendWrapperExtensionMessageAsync("get-auth-ticket-for-web-api", [identity])) as JSONObject;
 
 		if (result["isOk"])
 		{

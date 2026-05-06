@@ -257,8 +257,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     async unlockAchievement(achievement) {
         if (!this.#isAvailable)
             throw new Error("not available");
-        const result_ = await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement]);
-        const result = result_;
+        const result = (await this._sendWrapperExtensionMessageAsync("set-achievement", [achievement]));
         this._triggerAchievement = achievement;
         const isOk = result["isOk"];
         if (isOk) {
@@ -275,8 +274,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     async clearAchievement(achievement) {
         if (!this.#isAvailable)
             throw new Error("not available");
-        const result_ = await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement]);
-        const result = result_;
+        const result = (await this._sendWrapperExtensionMessageAsync("clear-achievement", [achievement]));
         // Just log result as this is primarily for testing purposes
         const isOk = result["isOk"];
         if (isOk) {
@@ -314,8 +312,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     async checkDlcInstalled(appIds) {
         if (!this.#isAvailable)
             throw new Error("not available");
-        const result_ = await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")]);
-        const result = result_;
+        const result = (await this._sendWrapperExtensionMessageAsync("is-dlc-installed", [appIds.map(id => String(id)).join(",")]));
         const isOk = result["isOk"];
         if (isOk) {
             const resultArr = result["results"].split(",");
@@ -352,8 +349,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     async getAuthTicketForWebApi(identity = "") {
         if (!this.#isAvailable)
             throw new Error("not available");
-        const result_ = await this._sendWrapperExtensionMessageAsync("get-auth-ticket-for-web-api", [identity]);
-        const result = result_;
+        const result = (await this._sendWrapperExtensionMessageAsync("get-auth-ticket-for-web-api", [identity]));
         if (result["isOk"]) {
             this.#hAuthTicket = result["authTicket"];
             this.#ticketHexStr = result["ticketHexStr"];
