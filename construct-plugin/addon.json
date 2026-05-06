@@ -26,6 +26,7 @@
 		"c3runtime/conditions.js",
 		"c3runtime/actions.js",
 		"c3runtime/expressions.js",
+		"c3runtime/ISteamworksInstance.d.ts",
 		"lang/en-US.json",
 		"aces.json",
 		"addon.json",

@@ -21,6 +21,10 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
         this._info.SetHelpUrl(self.lang(".help-url"));
         this._info.SetIsSingleGlobal(true);
         this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
+        this._info.SetScriptInterfaceNames({
+            instance: "ISteamworksInstance"
+        });
+        this._info.SetTypeScriptDefinitionFiles(["c3runtime/ISteamworksInstance.d.ts"]);
         SDK.Lang.PushContext(".properties");
         this._info.SetProperties([
             new SDK.PluginProperty("text", "app-id"),
