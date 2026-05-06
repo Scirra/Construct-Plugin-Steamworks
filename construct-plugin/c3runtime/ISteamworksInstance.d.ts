@@ -33,7 +33,7 @@ declare class ISteamworksInstance {
     readonly isAvailable: boolean;
     readonly isRunningOnSteamDeck: boolean;
     readonly personaName: string;
-    readonly accoundId: number;
+    readonly accountId: number;
     readonly steamId64Bit: string;
     readonly staticAccountKey: string;
     readonly appOwnerAccountId: number;
