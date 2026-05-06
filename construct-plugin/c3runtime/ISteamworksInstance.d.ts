@@ -30,7 +30,7 @@ interface SteamworksLeaderboardEntry {
 }
 
 declare class ISteamworksInstance {
-    readonly isAvailble: boolean;
+    readonly isAvailable: boolean;
     readonly isRunningOnSteamDeck: boolean;
     readonly personaName: string;
     readonly accoundId: number;
