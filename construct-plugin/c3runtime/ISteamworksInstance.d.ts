@@ -46,6 +46,7 @@ declare class ISteamworksInstance {
 
     getAvailableGameLanguages(): string[];
     showOverlay(overlayType: SteamworksOverlayType): void;
+    showOverlayURL(url: string, modal: boolean): void;
     showOverlayInviteDialog(lobbyId: string): void;
 
     unlockAchievement(achievement: string): Promise<boolean>;
