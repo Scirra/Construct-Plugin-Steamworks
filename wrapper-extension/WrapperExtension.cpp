@@ -391,7 +391,12 @@ void WrapperExtension::OnInitMessage(double asyncId)
 		// Send init data back to JavaScript with key details from the API.
 		SendAsyncResponse({
 			{ "isAvailable",				true },
-			{ "isRunningOnSteamDeck",		SteamUtils()->IsSteamRunningOnSteamDeck() },
+
+			// Note this returns ESteamHardwareType as a number to JavaScript.
+			// 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame
+			{ "isRunningOnSteamHardware",	static_cast<double>(SteamUtils()->IsRunningOnSteamHardware()) },
+			
+			{ "isRunningUnderProton",		SteamUtils()->IsRunningUnderProton() },
 
 			{ "personaName",				SteamFriends()->GetPersonaName() },
 			{ "accountId",					static_cast<double>(steamId.GetAccountID()) },

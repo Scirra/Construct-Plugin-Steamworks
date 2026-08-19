@@ -35,7 +35,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	// Steam properties
 	#isAvailable = false;
 	#isOverlayEnabled = true;
-	#isRunningOnSteamDeck = false;
+	#isRunningOnSteamHardware = 0;		// ESteamHardwareType: 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame
 	#accountId = 0;
 	#steamId64Bit = "";
 	#staticAccountKey = "";
@@ -122,7 +122,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		// If available, read the other initialization properties sent from the extension.
 		if (this.#isAvailable)
 		{
-			this.#isRunningOnSteamDeck = !!result["isRunningOnSteamDeck"];
+			this.#isRunningOnSteamHardware = result["isRunningOnSteamHardware"] as number;
 			this.#personaName = result["personaName"] as string;
 			this.#accountId = result["accountId"] as number;
 			this.#steamId64Bit = result["steamId64Bit"] as string;
@@ -343,7 +343,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 	get isRunningOnSteamDeck()
 	{
-		return this.#isRunningOnSteamDeck;
+		return this.#isRunningOnSteamHardware === 1;
 	}
 
 	get personaName()
