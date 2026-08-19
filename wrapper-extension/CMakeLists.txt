@@ -5,4 +5,10 @@ add_library(steam_wrapper_extension SHARED WrapperExtension.cpp Utils.cpp SteamC
 
 target_link_libraries(steam_wrapper_extension PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/steamworks-sdk/redistributable_bin/linux64/libsteam_api.so")
 
-set_target_properties(steam_wrapper_extension PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set_target_properties(steam_wrapper_extension PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    BUILD_RPATH "$ORIGIN"
+    BUILD_WITH_INSTALL_RPATH TRUE
+    INSTALL_RPATH "$ORIGIN"
+    SKIP_BUILD_RPATH FALSE
+)
