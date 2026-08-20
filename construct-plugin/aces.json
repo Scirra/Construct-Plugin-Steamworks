@@ -8,7 +8,16 @@
 				"scriptName": "IsAvailable"
 			}, {
 				"id": "is-running-on-steam-deck",
-				"scriptName": "IsRunningOnSteamDeck"
+				"scriptName": "IsRunningOnSteamDeck",
+				"isDeprecated": true
+			}, {
+				"id": "is-running-on-steam-hardware",
+				"scriptName": "IsRunningOnSteamHardware",
+				"params": [{
+					"id": "steam-hardware",
+					"type": "combo",
+					"items": ["none", "steam-deck", "steam-machine", "steam-frame", "any"]
+				}]
 			}, {
 				"id": "on-overlay-shown",
 				"isDeprecated": true,

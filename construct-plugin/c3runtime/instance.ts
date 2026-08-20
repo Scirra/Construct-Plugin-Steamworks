@@ -17,6 +17,8 @@ function ArrayBufferToBase64(arrayBuffer: ArrayBuffer)
 
 const VALID_OVERLAY_OPTIONS = ["friends", "community", "players", "settings", "official-game-group", "stats", "achievements"];
 const VALID_LEADERBOARD_DATA_TYPES = new Set(["global", "global-around-user", "friends"]);
+type SteamworksSteamHardwareType = "none" | "steam-deck" | "steam-machine" | "steam-frame";
+const STEAM_HARDWARE_TYPES: SteamworksSteamHardwareType[] = ["none", "steam-deck", "steam-machine", "steam-frame"];
 
 type LeaderboardEntry = {
 	personaName: string;
@@ -35,7 +37,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	// Steam properties
 	#isAvailable = false;
 	#isOverlayEnabled = true;
-	#isRunningOnSteamHardware = 0;		// ESteamHardwareType: 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame
+
+	// Number corresponding to ESteamHardwareType from Steamworks SDK:
+	// 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame
+	// Note the array STEAM_HARDWARE_TYPES must also match this.
+	#isRunningOnSteamHardware = 0;
+
 	#accountId = 0;
 	#steamId64Bit = "";
 	#staticAccountKey = "";
@@ -344,6 +351,12 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	get isRunningOnSteamDeck()
 	{
 		return this.#isRunningOnSteamHardware === 1;
+	}
+
+	get runningOnSteamHardware()
+	{
+		// return as string, e.g. "steam-deck"
+		return STEAM_HARDWARE_TYPES[this.#isRunningOnSteamHardware];
 	}
 
 	get personaName()

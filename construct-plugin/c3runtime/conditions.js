@@ -4,8 +4,20 @@ C3.Plugins.Steamworks_Ext.Cnds =
         IsAvailable() {
             return this.isAvailable;
         },
+        // Deprecated condition - superseded by IsRunningOnSteamHardware
         IsRunningOnSteamDeck() {
             return this.isRunningOnSteamDeck;
+        },
+        IsRunningOnSteamHardware(index) {
+            const steamHardware = this.runningOnSteamHardware;
+            // Note the index is 0 = none, 1 = steam deck, 2 = steam machine, 3 = steam frame, 4 = any.
+            // For "any", just check that the steam hardware is not "none".
+            if (index === 4) {
+                return steamHardware !== "none";
+            }
+            else {
+                return steamHardware === ["none", "steam-deck", "steam-machine", "steam-frame"][index];
+            }
         },
         OnGameOverlayShown() {
             return true;

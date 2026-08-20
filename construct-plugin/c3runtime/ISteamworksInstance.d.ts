@@ -1,4 +1,5 @@
 type SteamworksOverlayType = "friends" | "community" | "players" | "settings" | "official-game-group" | "stats" | "achievements";
+type SteamworksSteamHardwareType = "none" | "steam-deck" | "steam-machine" | "steam-frame";
 
 interface SteamworksAchievementInfo {
     isAchieved: boolean;
@@ -31,7 +32,10 @@ interface SteamworksLeaderboardEntry {
 
 declare class ISteamworksInstance {
     readonly isAvailable: boolean;
+    /** @deprecated Use runningOnSteamHardware instead */
     readonly isRunningOnSteamDeck: boolean;
+
+    readonly runningOnSteamHardware: SteamworksSteamHardwareType;
     readonly personaName: string;
     readonly accountId: number;
     readonly steamId64Bit: string;

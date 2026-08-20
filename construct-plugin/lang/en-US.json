@@ -42,6 +42,24 @@
 						"display-text": "Is running on Steam Deck",
 						"description": "Checks if Steam is running on a Steam Deck device."
 					},
+					"is-running-on-steam-hardware": {
+						"list-name": "Is running on Steam hardware",
+						"display-text": "Is running on Steam hardware [b]{0}[/b]",
+						"description": "Checks if Steam is running on a Steam hardware device like the Steam Deck.",
+						"params": {
+							"steam-hardware": {
+								"name": "Steam hardware",
+								"desc": "The type of Steam hardware to check for.",
+								"items": {
+									"none": "none",
+									"steam-deck": "Steam Deck",
+									"steam-machine": "Steam Machine",
+									"steam-frame": "Steam Frame",
+									"any": "Any"
+								}
+							}
+						}
+					},
 					"on-overlay-shown": {
 						"list-name": "On overlay shown",
 						"display-text": "On overlay shown",
