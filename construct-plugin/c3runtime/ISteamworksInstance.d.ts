@@ -37,6 +37,7 @@ declare class ISteamworksInstance {
     readonly isRunningOnSteamDeck: boolean;
 
     readonly runningOnSteamHardware: SteamworksSteamHardwareType;
+    readonly isRunningUnderProton: boolean;
     readonly personaName: string;
     readonly accountId: number;
     readonly steamId64Bit: string;

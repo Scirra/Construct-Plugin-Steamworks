@@ -32,6 +32,11 @@ C3.Plugins.Steamworks_Ext.Cnds =
 		}
 	},
 
+	IsRunningUnderProton(this: SDKInstanceClass)
+	{
+		return this.isRunningUnderProton;
+	},
+
 	OnGameOverlayShown(this: SDKInstanceClass)
 	{
 		return true;

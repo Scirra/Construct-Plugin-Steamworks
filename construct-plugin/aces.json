@@ -19,6 +19,9 @@
 					"items": ["none", "steam-deck", "steam-machine", "steam-frame", "any"]
 				}]
 			}, {
+				"id": "is-running-under-proton",
+				"scriptName": "IsRunningUnderProton"
+			}, {
 				"id": "on-overlay-shown",
 				"isDeprecated": true,
 				"scriptName": "OnGameOverlayShown",

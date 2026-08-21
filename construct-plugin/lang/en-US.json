@@ -60,6 +60,11 @@
 							}
 						}
 					},
+					"is-running-under-proton": {
+						"list-name": "Is running under Proton",
+						"display-text": "Is running under Proton",
+						"description": "Checks if the game is running under the Proton compatibility layer on Linux."
+					},
 					"on-overlay-shown": {
 						"list-name": "On overlay shown",
 						"display-text": "On overlay shown",

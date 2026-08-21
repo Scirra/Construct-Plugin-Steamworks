@@ -43,6 +43,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	// Note the array STEAM_HARDWARE_TYPES must also match this.
 	#isRunningOnSteamHardware = 0;
 
+	#isRunningUnderProton = false;
+
 	#accountId = 0;
 	#steamId64Bit = "";
 	#staticAccountKey = "";
@@ -132,6 +134,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		if (this.#isAvailable)
 		{
 			this.#isRunningOnSteamHardware = result["isRunningOnSteamHardware"] as number;
+			this.#isRunningUnderProton = result["isRunningUnderProton"] as boolean;
 			this.#personaName = result["personaName"] as string;
 			this.#accountId = result["accountId"] as number;
 			this.#steamId64Bit = result["steamId64Bit"] as string;
@@ -359,6 +362,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	{
 		// return as string, e.g. "steam-deck"
 		return STEAM_HARDWARE_TYPES[this.#isRunningOnSteamHardware];
+	}
+
+	get isRunningUnderProton()
+	{
+		return this.#isRunningUnderProton;
 	}
 
 	get personaName()

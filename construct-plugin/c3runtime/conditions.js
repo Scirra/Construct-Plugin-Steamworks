@@ -19,6 +19,9 @@ C3.Plugins.Steamworks_Ext.Cnds =
                 return steamHardware === ["none", "steam-deck", "steam-machine", "steam-frame"][index];
             }
         },
+        IsRunningUnderProton() {
+            return this.isRunningUnderProton;
+        },
         OnGameOverlayShown() {
             return true;
         },
