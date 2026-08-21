@@ -76,6 +76,16 @@ C3.Plugins.Steamworks_Ext.Exps =
 		return this._getAchievementUnlockTime();
 	},
 
+	StatValue(this: SDKInstanceClass)
+	{
+		return this._triggerStatValue;
+	},
+
+	StatName(this: SDKInstanceClass)
+	{
+		return this._triggerStatName;
+	},
+
 	TriggerAppID(this: SDKInstanceClass)
 	{
 		return this._triggerAppId;

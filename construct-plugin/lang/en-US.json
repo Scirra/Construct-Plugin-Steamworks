@@ -139,6 +139,22 @@
 						"display-text": "Achievement is achieved",
 						"description": "In a 'Get achievement info' trigger, whether the associated achievement has already been achieved."
 					},
+					"on-any-get-stat": {
+						"list-name": "On any get stat",
+						"display-text": "On any get stat",
+						"description": "Triggered after any successful 'Get stat' action."
+					},
+					"on-get-stat": {
+						"list-name": "On get stat",
+						"display-text": "On get stat [i]{0}[/i]",
+						"description": "Triggered after a successful 'Get stat' action.",
+						"params": {
+							"name": {
+								"name": "Name",
+								"desc": "The 'API Name' of the stat."
+							}
+						}
+					},
 					"on-dlc-installed-check-complete": {
 						"list-name": "On DLC installed check complete",
 						"display-text": "On DLC installed check complete",
@@ -317,6 +333,64 @@
 							"achievement": {
 								"name": "Achievement",
 								"desc": "The 'API Name' of the achievement."
+							}
+						}
+					},
+					"set-stat": {
+						"list-name": "Set stat",
+						"display-text": "Set stat [b]{0}[/b] to [i]{1}[/i] (type: [i]{2}[/i])",
+						"description": "Sets or updates the value of a given stat for the current user.",
+						"params": {
+							"name": {
+								"name": "Name",
+								"desc": "The 'API Name' of the stat."
+							},
+							"value": {
+								"name": "Value",
+								"desc": "The value to set."
+							},
+							"type": {
+								"name": "Type",
+								"desc": "The type of the stat. Must match the Steam configuration.",
+								"items": {
+									"integer": "integer",
+									"float": "float"
+								}
+							}
+						}
+					},
+					"get-stat": {
+						"list-name": "Get stat",
+						"display-text": "Get stat [b]{0}[/b] (type: [i]{1}[/i])",
+						"description": "Gets the current value of a stat for the current user.",
+						"params": {
+							"name": {
+								"name": "Name",
+								"desc": "The 'API Name' of the stat."
+							},
+							"type": {
+								"name": "Type",
+								"desc": "The type of the stat. Must match the Steam configuration.",
+								"items": {
+									"integer": "integer",
+									"float": "float"
+								}
+							}
+						}
+					},
+					"store-stats": {
+						"list-name": "Store stats",
+						"display-text": "Store stats",
+						"description": "Send changed stats to the server for permanent storage."
+					},
+					"reset-all-stats": {
+						"list-name": "Reset all stats",
+						"display-text": "Reset all stats (achievements too: [i]{0}[/i])",
+						"description": "Resets all the current user's stats/achievements.",
+						"params": {
+							"achievements-too": {
+								"name": "Achievements too",
+								"desc": "Check to reset all achievements as well."
 							}
 						}
 					},
@@ -504,6 +578,14 @@
 					"achievement-unlock-time": {
 						"description": "In a 'Get achievement info' trigger, the unlock time of the achievement, in milliseconds since 1st Jan 1970.",
 						"translated-name": "AchievementUnlockTime"
+					},
+					"stat-value": {
+						"description": "In a 'Get stat' trigger, the value of the stat.",
+						"translated-name": "StatValue"
+					},
+					"stat-name": {
+						"description": "In a 'Get stat' trigger, the name of the stat.",
+						"translated-name": "StatName"
 					},
 					"trigger-app-id": {
 						"description": "The app ID for a trigger, e.g. 'On DLC installed'.",

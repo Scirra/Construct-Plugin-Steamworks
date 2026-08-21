@@ -278,6 +278,31 @@ void WrapperExtension::HandleWebMessage(const std::string& messageId, const std:
 
 		OnGetAchievementInfoMessage(name, asyncId);
 	}
+	else if (messageId == "set-stat")
+	{
+		const std::string& apiName = params[0].GetString();
+		double value = params[1].GetNumber();
+		bool isInt = params[2].GetBool();
+
+		OnSetStat(apiName, value, isInt, asyncId);
+	}
+	else if (messageId == "get-stat")
+	{
+		const std::string& apiName = params[0].GetString();
+		bool isInt = params[2].GetBool();
+
+		OnGetStat(apiName, isInt, asyncId);
+	}
+	else if (messageId == "store-stats")
+	{
+		OnStoreStats(asyncId);
+	}
+	else if (messageId == "reset-all-stats")
+	{
+		bool achievementsToo = params[0].GetBool();
+
+		OnResetAllStats(achievementsToo, asyncId);
+	}
 	else if (messageId == "is-dlc-installed")
 	{
 		const std::string& appIdStr = params[0].GetString();
@@ -516,6 +541,65 @@ void WrapperExtension::OnGetAchievementInfoMessage(const std::string& name, doub
 		// tend to use the convention of milliseconds since Jan 1 1970, so multiply the returned time by 1000
 		// (also returning as a double to match the number type used by JavaScript).
 		{ "unlockTime", static_cast<double>(unlockTime) * 1000.0 }
+	}, asyncId);
+}
+
+void WrapperExtension::OnSetStat(const std::string& apiName, double data, bool isInt, double asyncId)
+{
+	bool isOk;
+	if (isInt)
+	{
+		isOk = SteamUserStats()->SetStat(apiName.c_str(), static_cast<int32_t>(data));
+	}
+	else
+	{
+		isOk = SteamUserStats()->SetStat(apiName.c_str(), static_cast<float>(data));
+	}
+
+	SendAsyncResponse({
+		{ "isOk", isOk }
+	}, asyncId);
+}
+
+void WrapperExtension::OnGetStat(const std::string& apiName, bool isInt, double asyncId)
+{
+	// Note as JavaScript represents all numbers as double, the result is always returned as a double.
+	double result;
+	bool isOk;
+	if (isInt)
+	{
+		int32_t data = 0;
+		isOk = SteamUserStats()->GetStat(apiName.c_str(), &data);
+		result = static_cast<double>(data);
+	}
+	else
+	{
+		float data = 0.0f;
+		isOk = SteamUserStats()->GetStat(apiName.c_str(), &data);
+		result = static_cast<double>(data);
+	}
+
+	SendAsyncResponse({
+		{ "isOk", isOk },
+		{ "result", result}
+	}, asyncId);
+}
+
+void WrapperExtension::OnStoreStats(double asyncId)
+{
+	bool isOk = SteamUserStats()->StoreStats();
+
+	SendAsyncResponse({
+		{ "isOk", isOk }
+	}, asyncId);
+}
+
+void WrapperExtension::OnResetAllStats(bool achievementsToo, double asyncId)
+{
+	bool isOk = SteamUserStats()->ResetAllStats(achievementsToo);
+
+	SendAsyncResponse({
+		{ "isOk", isOk }
 	}, asyncId);
 }
 

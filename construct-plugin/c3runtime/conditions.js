@@ -52,6 +52,12 @@ C3.Plugins.Steamworks_Ext.Cnds =
         AchievementIsAchieved() {
             return this._getAchievementIsAchieved();
         },
+        OnAnyGetStat() {
+            return true;
+        },
+        OnGetStat(name) {
+            return this._triggerStatName === name;
+        },
         OnDLCInstalledCheckComplete() {
             return true;
         },

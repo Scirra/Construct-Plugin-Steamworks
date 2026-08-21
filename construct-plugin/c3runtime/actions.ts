@@ -35,6 +35,28 @@ C3.Plugins.Steamworks_Ext.Acts =
 		await this.getAchievementInfo(achievement);
 	},
 
+	async SetStat(this: SDKInstanceClass, name: string, value: number, type: number)
+	{
+		// type: 0 = integer, 1 = float
+		await this.setStat(name, value, (type === 0 ? "integer" : "float"));
+	},
+
+	async GetStat(this: SDKInstanceClass, name: string, type: number)
+	{
+		// type: 0 = integer, 1 = float
+		await this.getStat(name, (type === 0 ? "integer" : "float"));
+	},
+
+	async StoreStats(this: SDKInstanceClass)
+	{
+		await this.storeStats();
+	},
+
+	async ResetAllStats(this: SDKInstanceClass, achievementsToo: boolean)
+	{
+		await this.resetAllStats(achievementsToo);
+	},
+
 	async CheckDLCInstalled(this: SDKInstanceClass, appIds: string | number)
 	{
 		let appIdArr;

@@ -87,6 +87,16 @@ C3.Plugins.Steamworks_Ext.Cnds =
 		return this._getAchievementIsAchieved();
 	},
 
+	OnAnyGetStat(this: SDKInstanceClass)
+	{
+		return true
+	},
+
+	OnGetStat(this: SDKInstanceClass, name: string)
+	{
+		return this._triggerStatName === name;
+	},
+
 	OnDLCInstalledCheckComplete(this: SDKInstanceClass)
 	{
 		return true;

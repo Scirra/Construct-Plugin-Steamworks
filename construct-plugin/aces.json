@@ -164,6 +164,18 @@
 			}, {
 				"id": "achievement-is-achieved",
 				"scriptName": "AchievementIsAchieved"
+			}, {
+				"id": "on-any-get-stat",
+				"scriptName": "OnAnyGetStat",
+				"isTrigger": true
+			}, {
+				"id": "on-get-stat",
+				"scriptName": "OnGetStat",
+				"isTrigger": true,
+				"params": [{
+					"id": "name",
+					"type": "string"
+				}]
 			}
 		],
 		"actions": [
@@ -191,6 +203,45 @@
 					"id": "achievement",
 					"type": "string"
 				}]
+			}, {
+				"id": "set-stat",
+				"scriptName": "SetStat",
+				"isAsync": true,
+				"params": [{
+					"id": "name",
+					"type": "string"
+				}, {
+					"id": "value",
+					"type": "number"
+				}, {
+					"id": "type",
+					"type": "combo",
+					"items": ["integer", "float"]
+				}]
+			}, {
+				"id": "get-stat",
+				"scriptName": "GetStat",
+				"isAsync": true,
+				"params": [{
+					"id": "name",
+					"type": "string"
+				}, {
+					"id": "type",
+					"type": "combo",
+					"items": ["integer", "float"]
+				}]
+			}, {
+				"id": "store-stats",
+				"scriptName": "StoreStats",
+				"isAsync": true
+			}, {
+				"id": "reset-all-stats",
+				"scriptName": "ResetAllStats",
+				"isAsync": true,
+				"params": [{
+					"id": "achievements-too",
+					"type": "boolean"
+				}]
 			}
 		],
 		"expressions": [
@@ -202,6 +253,14 @@
 				"id": "achievement-unlock-time",
 				"expressionName": "AchievementUnlockTime",
 				"returnType": "number"
+			}, {
+				"id": "stat-value",
+				"expressionName": "StatValue",
+				"returnType": "number"
+			}, {
+				"id": "stat-name",
+				"expressionName": "StatName",
+				"returnType": "string"
 			}
 		]
 	},

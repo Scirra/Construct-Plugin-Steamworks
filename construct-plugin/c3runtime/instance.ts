@@ -70,6 +70,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 	// For triggers. Note as these are read externally they are left as public properties
 	// but with an underscore to indicate internal use.
 	_triggerAchievement = "";
+	_triggerStatName = "";
+	_triggerStatValue = 0;
 	_triggerAppId = 0;
 	_triggerLeaderboardName = "";
 	_triggerDidScoreChange = false;
@@ -518,6 +520,78 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoError);
 
 			return null;		// return result for script interface
+		}
+	}
+
+	async setStat(name: string, value: number, type: "integer" | "float")
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		
+		const isInt = (type === "integer");
+		const result = (await this._sendWrapperExtensionMessageAsync("set-stat", [name, value, isInt])) as JSONObject;
+
+		const isOk = (result["isOk"] as boolean);
+		if (!isOk)
+		{
+			console.error(`[Steamworks-Ext] Failed to set stat '${name}'`);
+		}
+	}
+
+	async getStat(name: string, type: "integer" | "float")
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		
+		const isInt = (type === "integer");
+		const result = (await this._sendWrapperExtensionMessageAsync("get-stat", [name, isInt])) as JSONObject;
+
+		const isOk = (result["isOk"] as boolean);
+		if (isOk)
+		{
+			const value = (result["result"] as number);
+			this._triggerStatName = name;
+			this._triggerStatValue = value;
+
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetStat);
+			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetStat);
+
+			// Return result for script interface
+			return value;
+		}
+		else
+		{
+			console.error(`[Steamworks-Ext] Failed to get stat '${name}'`);
+
+			return null;		// return result for script interface
+		}
+	}
+
+	async storeStats()
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		
+		const result = (await this._sendWrapperExtensionMessageAsync("store-stats") as JSONObject);
+
+		const isOk = (result["isOk"] as boolean);
+		if (!isOk)
+		{
+			console.error(`[Steamworks-Ext] Failed to store stats`);
+		}
+	}
+
+	async resetAllStats(achievementsToo?: boolean)
+	{
+		if (!this.#isAvailable)
+			throw new Error("not available");
+		
+		const result = (await this._sendWrapperExtensionMessageAsync("reset-all-stats", [Boolean(achievementsToo)]) as JSONObject);
+
+		const isOk = (result["isOk"] as boolean);
+		if (!isOk)
+		{
+			console.error(`[Steamworks-Ext] Failed to reset all stats`);
 		}
 	}
 

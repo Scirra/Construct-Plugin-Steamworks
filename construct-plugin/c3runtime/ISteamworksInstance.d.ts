@@ -1,5 +1,6 @@
 type SteamworksOverlayType = "friends" | "community" | "players" | "settings" | "official-game-group" | "stats" | "achievements";
 type SteamworksSteamHardwareType = "none" | "steam-deck" | "steam-machine" | "steam-frame";
+type SteamworksStatType = "integer" | "float";
 
 interface SteamworksAchievementInfo {
     isAchieved: boolean;
@@ -56,6 +57,10 @@ declare class ISteamworksInstance {
     unlockAchievement(achievement: string): Promise<boolean>;
     clearAchievement(achievement: string): Promise<boolean>;
     getAchievementInfo(achievement: string): Promise<SteamworksAchievementInfo | null>;
+    setStat(name: string, value: number, type: SteamworksStatType): Promise<void>;
+    getStat(name: string, type: SteamworksStatType): Promise<number | null>;
+    storeStats(): Promise<void>;
+    resetAllStats(achievementsToo?: boolean): Promise<void>;
 
     uploadLeaderboardScore(leaderboardName: string, score: number, forceUpdate: boolean): Promise<SteamworksScoreUploadResult>;
     downloadLeaderboardEntries(leaderboardName: string, dataType: SteamworksLeaderboardDataType, start: number, end: number): Promise<SteamworksLeaderboardEntries>;

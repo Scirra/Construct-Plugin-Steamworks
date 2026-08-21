@@ -42,6 +42,8 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
     // For triggers. Note as these are read externally they are left as public properties
     // but with an underscore to indicate internal use.
     _triggerAchievement = "";
+    _triggerStatName = "";
+    _triggerStatValue = 0;
     _triggerAppId = 0;
     _triggerLeaderboardName = "";
     _triggerDidScoreChange = false;
@@ -355,6 +357,54 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase {
             this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetAchievementInfoError);
             this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetAchievementInfoError);
             return null; // return result for script interface
+        }
+    }
+    async setStat(name, value, type) {
+        if (!this.#isAvailable)
+            throw new Error("not available");
+        const isInt = (type === "integer");
+        const result = (await this._sendWrapperExtensionMessageAsync("set-stat", [name, value, isInt]));
+        const isOk = result["isOk"];
+        if (!isOk) {
+            console.error(`[Steamworks-Ext] Failed to set stat '${name}'`);
+        }
+    }
+    async getStat(name, type) {
+        if (!this.#isAvailable)
+            throw new Error("not available");
+        const isInt = (type === "integer");
+        const result = (await this._sendWrapperExtensionMessageAsync("get-stat", [name, isInt]));
+        const isOk = result["isOk"];
+        if (isOk) {
+            const value = result["result"];
+            this._triggerStatName = name;
+            this._triggerStatValue = value;
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnAnyGetStat);
+            this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGetStat);
+            // Return result for script interface
+            return value;
+        }
+        else {
+            console.error(`[Steamworks-Ext] Failed to get stat '${name}'`);
+            return null; // return result for script interface
+        }
+    }
+    async storeStats() {
+        if (!this.#isAvailable)
+            throw new Error("not available");
+        const result = await this._sendWrapperExtensionMessageAsync("store-stats");
+        const isOk = result["isOk"];
+        if (!isOk) {
+            console.error(`[Steamworks-Ext] Failed to store stats`);
+        }
+    }
+    async resetAllStats(achievementsToo) {
+        if (!this.#isAvailable)
+            throw new Error("not available");
+        const result = await this._sendWrapperExtensionMessageAsync("reset-all-stats", [Boolean(achievementsToo)]);
+        const isOk = result["isOk"];
+        if (!isOk) {
+            console.error(`[Steamworks-Ext] Failed to reset all stats`);
         }
     }
     async uploadLeaderboardScore(leaderboardName, score, forceUpdate) {

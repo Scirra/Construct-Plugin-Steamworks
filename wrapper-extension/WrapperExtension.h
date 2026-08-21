@@ -35,6 +35,10 @@ public:
 	void OnSetAchievementMessage(const std::string& name, double asyncId);
 	void OnClearAchievementMessage(const std::string& name, double asyncId);
 	void OnGetAchievementInfoMessage(const std::string& name, double asyncId);
+	void OnSetStat(const std::string& apiName, double data, bool isInt, double asyncId);
+	void OnGetStat(const std::string& apiName, bool isInt, double asyncId);
+	void OnStoreStats(double asyncId);
+	void OnResetAllStats(bool achievementsToo, double asyncId);
 	void OnIsDLCInstalledMessage(const std::string& appIdStr, double asyncId);
 	void OnInstallDLCMessage(AppId_t appId);
 	void OnUninstallDLCMessage(AppId_t appId);
