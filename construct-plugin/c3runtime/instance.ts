@@ -36,7 +36,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 {
 	// Steam properties
 	#isAvailable = false;
-	#isOverlayEnabled = true;
+	#steamMode = "";
 
 	// Number corresponding to ESteamHardwareType from Steamworks SDK:
 	// 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame
@@ -92,8 +92,6 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		// Note the properties for App ID and development mode are not read here - instead they are exported
 		// to the package.json file with the call to SetWrapperExportProperties(). The wrapper extension
 		// then reads these values and sends the app ID when responding to the "init" message.
-		const properties = this._getInitProperties();
-		this.#isOverlayEnabled = properties[2] as boolean;
 
 		// Listen for events from wrapper extension.
 		this._addWrapperMessageHandlers([
@@ -133,6 +131,7 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		// If available, read the other initialization properties sent from the extension.
 		if (this.#isAvailable)
 		{
+			this.#steamMode = result["steamMode"] as string;
 			this.#isRunningOnSteamHardware = result["isRunningOnSteamHardware"] as number;
 			this.#isRunningUnderProton = result["isRunningUnderProton"] as boolean;
 			this.#personaName = result["personaName"] as string;
@@ -148,11 +147,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 			this.#currentGameLanguage = result["currentGameLanguage"] as string;
 			this._availableGameLanguages = result["availableGameLanguages"] as string;
 
-			// If the overlay is enabled, also activate the D3D11 overlay extension (if available).
+			// When exporting with Steam mode "overlay", also activate the D3D11 overlay extension (if available).
 			// Note this is only supported with r457+, as it requires the host input processing change
 			// for Windows WebView2 in r450, but constructVersionCode was only added in r457, so this
 			// check will only actually verify it is r457+.
-			if (this.#isOverlayEnabled)
+			if (this.#steamMode === "overlay")
 			{
 				if (this.runtime.sdk.constructVersionCode >= 45700)
 				{
@@ -185,8 +184,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 
 	#tick()
 	{
-		// Tell the D3D11 overlay extension to tick
-		this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "tick");
+		if (this.#steamMode === "overlay")
+		{
+			// Tell the D3D11 overlay extension to tick
+			this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "tick");
+		}
 
 		// Tell Steam extension to call SteamAPI_RunCallbacks().
 		this._sendWrapperExtensionMessage("run-callbacks");
@@ -208,8 +210,11 @@ class Steamworks_ExtInstance extends globalThis.ISDKInstanceBase
 		else
 			this._trigger(C3.Plugins.Steamworks_Ext.Cnds.OnGameOverlayHidden);
 
-		// Tell the D3D11 overlay extension about the change in overlay state
-		this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
+		if (this.#steamMode === "overlay")
+		{
+			// Tell the D3D11 overlay extension about the change in overlay state
+			this.runtime.sdk.sendWrapperExtensionMessage("d3d11-overlay", "set-showing", [isShowing]);
+		}
 	}
 
 	#onDlcInstalled(e: JSONObject)

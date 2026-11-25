@@ -65,6 +65,8 @@ protected:
 	IApplication* iApplication;
 	bool didSteamInitOk;
 
+	std::string steamMode;
+
 	double pendingAuthTicketForWebApiAsyncId;
 	double pendingFindLeaderboardAsyncId;
 	double pendingUploadLeaderboardScoreAsyncId;

@@ -87,8 +87,14 @@ void WrapperExtension::Init()
 		TrimString(appId);
 		isDevelopmentMode = steamProps["development-mode"].get<bool>();
 
+		// Read the Steam mode chosen on export.
+		// This is only set in newer versions of Construct so if not specified leave steamMode as an empty string.
+		const auto& settingsJson = packageJson["settings"];
+		if (settingsJson.contains("steam-mode"))
+			steamMode = settingsJson["steam-mode"].get<std::string>();
+
 		std::stringstream ss;
-		ss << "Parsed package JSON (app ID " << appId << ", development mode " << isDevelopmentMode << ")";
+		ss << "Parsed package JSON (app ID " << appId << ", development mode " << isDevelopmentMode << ", Steam mode " << steamMode << ")";
 		LogMessage(ss.str());
 	}
 	catch (...)
@@ -416,6 +422,7 @@ void WrapperExtension::OnInitMessage(double asyncId)
 		// Send init data back to JavaScript with key details from the API.
 		SendAsyncResponse({
 			{ "isAvailable",				true },
+			{ "steamMode",					steamMode },
 
 			// Note this returns ESteamHardwareType as a number to JavaScript.
 			// 0 = none, 1 = Steam Deck, 2 = Steam Machine, 3 = Steam Frame

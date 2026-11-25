@@ -39,8 +39,7 @@ const PLUGIN_CLASS = SDK.Plugins.Steamworks_Ext = class Steamworks_Ext extends S
 		
 		this._info.SetProperties([
 			new SDK.PluginProperty("text", "app-id"),
-			new SDK.PluginProperty("check", "development-mode", true),
-			new SDK.PluginProperty("check", "enable-overlay", true)
+			new SDK.PluginProperty("check", "development-mode", true)
 		]);
 
 		this._info.SetWrapperExportProperties("scirra-steam", ["app-id", "development-mode"]);
